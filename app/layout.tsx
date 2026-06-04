@@ -1,4 +1,3 @@
-import "./globals.css";
 
 export default function RootLayout({
   children,
@@ -7,7 +6,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }

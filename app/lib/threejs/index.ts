@@ -7,7 +7,7 @@ export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: strin
   const { renderer, scene, camera, ld, cleanEventResize } = Renderer(mount,perfLevel);
 
   const materials = createMaterials(perfLevel);
-  materials.matGlassFront.uniforms.uLightDir.value.copy(ld);
+  if(perfLevel == 'full') materials.matGlassFront.uniforms.uLightDir.value.copy(ld);
 
   buildBoard(scene, materials);
 

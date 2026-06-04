@@ -13,10 +13,21 @@ import * as THREE from 'three';
 //  matFilament   — barre centrale quasi invisible, reagit aux pulses
 // ─────────────────────────────────────────────────────────
 
-export function createMaterials() {
-
-    // Face arriere : interieur tinte, transmission activee
-    const matGlassBack = new THREE.MeshPhysicalMaterial({
+function typeOfMatGlass(perfLevel:string) {
+  if (perfLevel == "reduced") {
+    return new THREE.MeshStandardMaterial({
+        color:         new THREE.Color(0x55bbdd),
+        roughness:     0.05,
+        metalness:     0.0,
+        transparent:   true,
+        opacity:       1.0,
+        side:          THREE.BackSide,
+        depthWrite:    false,
+        envMapIntensity: 0.8,
+    });
+  }
+  else {
+    return new THREE.MeshPhysicalMaterial({
         color:         new THREE.Color(0x55bbdd),
         roughness:     0.05,
         metalness:     0.0,
@@ -29,6 +40,15 @@ export function createMaterials() {
         depthWrite:    false,
         envMapIntensity: 0.8,
     });
+  }
+}
+
+export function createMaterials(perfLevel:string) {
+
+
+    // Face arriere : interieur tinte, transmission activee
+
+  const matGlassBack = typeOfMatGlass(perfLevel);
 
 // Face avant : ShaderMaterial Fresnel
 // Le Fresnel fait que :

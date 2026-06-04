@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function Renderer(mount: HTMLDivElement) {
+export function Renderer(mount: HTMLDivElement, perfLevel: string) {
 
   const scene = new THREE.Scene();
 
@@ -10,7 +10,13 @@ export function Renderer(mount: HTMLDivElement) {
   //  RENDERER
   // ─────────────────────────────────────────────────────────
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  if (perfLevel == "reduced") {
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
+  }
+  else
+  {
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  }
   renderer.setAnimationLoop( animate );
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setClearColor(0x000508, 1);
@@ -79,7 +85,15 @@ export function Renderer(mount: HTMLDivElement) {
   window.addEventListener('resize', onResize)
 
 
-  function animate() {
+  let lastTime = 0
+  const TARGET_FPS = 30
+  const FRAME_INTERVAL = 1000 / TARGET_FPS
+
+  function animate(time: number) {
+    if (perfLevel == "reduced") {
+      if (time - lastTime < FRAME_INTERVAL) return
+        lastTime = time
+    }
          renderer.render( scene, camera );
   }
 

@@ -2,11 +2,11 @@ import { Renderer } from './renderer';
 import { buildBoard } from './buildBoard';
 import { createMaterials } from './materials';
 
-export function initThreeSceneBackground(mount: HTMLDivElement) {
+export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {
 
-  const { renderer, scene, camera, ld, cleanEventResize } = Renderer(mount);
+  const { renderer, scene, camera, ld, cleanEventResize } = Renderer(mount,perfLevel);
 
-  const materials = createMaterials();
+  const materials = createMaterials(perfLevel);
   materials.matGlassFront.uniforms.uLightDir.value.copy(ld);
 
   buildBoard(scene, materials);

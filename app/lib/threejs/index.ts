@@ -16,6 +16,7 @@ export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: strin
     cleanup: () => {
       renderer.setAnimationLoop(null);    // stoppe la boucle
       cleanEventResize();                 // retire le listener resize
+      mount.removeChild(renderer.domElement)  // ← ajouter
       renderer.dispose();                 // libère le contexte WebGL
     }};
 }

@@ -2,10 +2,10 @@
 import { useRef, useEffect } from 'react';
 import { initThreeSceneBackground } from '@/app/lib/threejs';
 
+
 // Selon le terminal, on réduit voir on déactive le background
 function getMobilePerf(): 'full' | 'reduced' | 'none' {
   if (typeof window === 'undefined') return 'full';
-
   const isMobile = window.innerWidth < 768;
   if (!isMobile) return 'full';
 
@@ -23,19 +23,23 @@ export default function ThreeJsBackground() {
   const mountRef = useRef<HTMLDivElement>(null);
 
   const perfLevel = getMobilePerf();
-  console.log(perfLevel)
 
   useEffect(() => {
     if (!mountRef.current) return;
     if (perfLevel == 'none')return;
     const { cleanup } = initThreeSceneBackground(mountRef.current, perfLevel);
+
+    requestAnimationFrame(() => {
+            if (mountRef.current) mountRef.current.style.opacity = '1'
+        })
+
     return cleanup;
   }, [perfLevel]);
 
   if (perfLevel === 'none') {
     return (
       <div style={{
-        position: 'fixed', inset: 0, zIndex: -1,
+        position: 'fixed', inset: 0, zIndex: 1,
         background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)',
         }} />
     )
@@ -47,8 +51,10 @@ export default function ThreeJsBackground() {
         style={{
           position: 'fixed',
           inset: 0,
-          zIndex: -1,
+          zIndex: 1,
           pointerEvents: 'none',
+          opacity: 0,
+          transition: 'opacity 800ms ease-in-out',
         }}
       />
     )

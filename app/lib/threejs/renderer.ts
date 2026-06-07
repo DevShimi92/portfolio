@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function Renderer(mount: HTMLDivElement, perfLevel: string) {
+export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (deltaTime: number) => void) {
 
   const scene = new THREE.Scene();
 
@@ -50,7 +50,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string) {
   scene.add(dir);
 
   // Direction lumiere en espace camera (approximee depuis la dirLight)
-  const ld = dir.position.clone().normalize();
+  const lightDirection = dir.position.clone().normalize();
 
   // ─────────────────────────────────────────────────────────
   // Camera
@@ -85,21 +85,28 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string) {
   window.addEventListener('resize', onResize)
 
 
+
   let lastTime = 0
   const TARGET_FPS = 30
   const FRAME_INTERVAL = 1000 / TARGET_FPS
 
+  const clock = new THREE.Timer()
+
   function animate(time: number) {
+    clock.update(time)
+    const deltaTime = clock.getDelta();
     if (perfLevel == "reduced") {
       if (time - lastTime < FRAME_INTERVAL) return
         lastTime = time
     }
-         renderer.render( scene, camera );
+
+    onUpdate?.(deltaTime);
+    renderer.render( scene, camera );
   }
 
   mount.appendChild(renderer.domElement);
 
   return {
-    renderer, scene, camera, ld,
+    renderer, scene, camera, lightDirection,
     cleanEventResize: () => window.removeEventListener('resize', onResize)};
 }

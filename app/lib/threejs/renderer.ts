@@ -56,10 +56,10 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   // Camera
   // ─────────────────────────────────────────────────────────
   // Etat orbite de la caméra
-  const theta  = 0.556, phi = 0.958, radius = 18.70;
+  const theta  = 0.490, phi = 0.952, radius = 16.13;
 
   // Point cible (pan translate ce vecteur)
-  const target = new THREE.Vector3(-6.84, -2.69, 7.48);
+  const target = new THREE.Vector3(-11.99, 1.37, 2.88);
 
   function applyCamera() {
       // Position spherique autour de target

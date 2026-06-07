@@ -276,14 +276,18 @@ export function buildBoard(scene: THREE.Scene, materials: Materials) {
       //  Les colonnes/rangées sont des coordonnées de grille
       //  (multipliées par GRID_UNIT pour obtenir les coords monde)
       // ─────────────────────────────────────────────────────────
-      traceTubes([[-0.5,-10], [-0.5,-2.5], [ 2.5, 1.5], [ 2.25, 15]], TRACE_WIDTH);
-      traceTubes([[-1,  -10], [-1,  -2  ], [ 2,   2  ], [ 1.75, 15]], TRACE_WIDTH);
-      traceTubes([[-1.5,-10], [-1.5,-1.5], [-0.4, 0  ], [-0.95,  0.35]], TRACE_WIDTH);
-      traceTubes([[-2,  -10], [-2,  -1  ], [ 1,   3  ], [ 1,    15]], TRACE_WIDTH);
-      traceTubes([[-2.5,-10], [-2.5,-0.5], [ 0.5, 3.5], [ 0.5,  15]], TRACE_WIDTH);
-      traceTubes([[-3,  -10], [-3,   0  ], [ 0,   4  ], [ 0,    15]], TRACE_WIDTH);
-      traceTubes([[-3.5,-10], [-3.5, 0.5], [-0.5, 4.5], [-0.5,  15]], TRACE_WIDTH);
-      traceTubes([[-4,  -10], [-4,   1  ], [-1,   5  ], [-1,    15]], TRACE_WIDTH);
+      traceTubes([[-5.65,2.35],[-5.65,3.35], [-5.5,3.5], [-5.5,10]], TRACE_WIDTH);
+      traceTubes([[-5.75,1.25],[-5.75,2.25], [-5,3], [-5,10]], TRACE_WIDTH);
+      traceTubes([[-6,-4],[-6,1], [-4.5,2.5], [-4.5,10]], TRACE_WIDTH);
+      traceTubes([[-5,-11.5],[-7,-9.5],[-7,-5],[-6.5,-4.5]], TRACE_WIDTH);
+      traceTubes([[-5  ,-20],[-5,-10.5],[-6.5,-9],[-6.5,-4.5],[-6,-4], [-6,-0], [-4,2], [-4,10]], TRACE_WIDTH);
+      traceTubes([[-3  ,-20],[-3,    -11],[-5,-9],[-5,-8]],    TRACE_WIDTH);
+      traceTubes([[-2.5,-20],[-2.5,-10.5], [-5.5,-7.5],[-5.5,-0.5],[-3.5, 1.5],[-3.5,10]],  TRACE_WIDTH);
+      traceTubes([[-1  ,-20],[-1    ,-11], [-5,    -7],[-5,    -1],[-3,     1],[-3,10]], TRACE_WIDTH);
+      traceTubes([[-0.5,-20],[-0.5,-10.5], [-4.5,-6.5],[-4.5,-1.5],[-2.5, 0.5],[-2.5,10]], TRACE_WIDTH);
+      traceTubes([[0   ,-20],[0     ,-10], [-4,    -6],[-4,    -2],[-2,     0], [-2,10]], TRACE_WIDTH);
+      traceTubes([[1   ,-20],[1      ,-9], [-3,    -5],[-3    ,-3],[-2.5,-2.5], [-2.5,-0.5]], TRACE_WIDTH);
+      traceTubes([[1.5 ,-20],[1.5  ,-8.5], [-2.5,-4.5],[-2.5,-3.5],[-2,    -3], [-2.5,-2.5]], TRACE_WIDTH);
 
       // ─────────────────────────────────────────────────────────
       //  MERGE FINAL — un seul draw call par matériau

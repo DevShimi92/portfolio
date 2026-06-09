@@ -1,304 +1,316 @@
-import { Materials } from '@/app/types/materials';
 import * as THREE from 'three';
+import { AnimatedTrace } from '@/app/types/animatedTrace';
+import { TraceSegment }  from '@/app/types/traceSegment';
+import { ALL_TRACES }    from './traceRegistry';
+import { createStaticMaterials, createGlowFrontMat, createGlowBackMat, createGlowFilamentMat } from './materialsGlow';
+import { BOARD_HEIGHT, BOARD_SURFACE, TRACE_WIDTH, FILAMENT_Y, toWorldX, toWorldZ } from './boardConstants';
 
-export function buildBoard(scene: THREE.Scene, materials: Materials) {
+// ═══════════════════════════════════════════════════════════════
+//  buildBoard
+//
+//  Construit l'intégralité du board PCB en une seule passe :
+//    — traces décoratives  : mergées en 3 draw calls, matériaux
+//                            statiques partagés (uBrightness = 0)
+//    — traces animables    : géométrie individuelle, matériaux
+//                            glow dédiés, retournées dans la map
+//
+//  Retourne : Map<traceId, AnimatedTrace>
+//    Chaque entrée est prête à être passée à updateAnimatedTrace().
+//    Les traces inactives ont uBrightness = 0 — visuellement
+//    identiques aux traces décoratives, zéro coût supplémentaire.
+// ═══════════════════════════════════════════════════════════════
+export function buildBoard(scene: THREE.Scene): Map<string, AnimatedTrace> {
 
   const root = new THREE.Group();
   scene.add(root);
 
-  const BOARD_HEIGHT  = 0.10;
-  const BOARD_SURFACE = BOARD_HEIGHT / 2; // niveau Y de la surface du board
-
+  // ─────────────────────────────────────────────────────────
+  //  BOARD — plan de fond
+  // ─────────────────────────────────────────────────────────
   root.add(new THREE.Mesh(
     new THREE.BoxGeometry(100, BOARD_HEIGHT, 100),
-    new THREE.MeshStandardMaterial({
-      color: 0x04080c, roughness: 0.12, metalness: 0.7,
-    })
+    new THREE.MeshStandardMaterial({ color: 0x04080c, roughness: 0.12, metalness: 0.7 })
   ));
 
   // ─────────────────────────────────────────────────────────
-  //  GRILLE — unité de base pour le placement des traces
-  //  Toutes les coordonnées des traces sont exprimées en
-  //  "cases de grille" et converties en coordonnées monde
-  //  via gridX() et gridZ()
+  //  INDEX DES TRACES ANIMABLES
+  //
+  //  Set des traceId définis dans ALL_TRACES.
+  //  Consulté dans traceTubes() pour savoir si une trace
+  //  doit être construite individuellement ou mergée.
   // ─────────────────────────────────────────────────────────
-  const GRID_UNIT = 1.9; // taille d'une case en unités monde
-  const gridX = (column: number) => column * GRID_UNIT;
-  const gridZ = (row: number) => row * GRID_UNIT;
-
-  // Tableaux de géométries à merger par matériau
-  const backFaceGeometries: THREE.BufferGeometry[] = []; // intérieur du verre (BackSide)
-  const filamentGeometries: THREE.BufferGeometry[] = []; // cœur conducteur (quasi invisible)
-  const frontFaceGeometries:THREE.BufferGeometry[] = []; // surface Fresnel (FrontSide)
+  const animatableIds = new Set(ALL_TRACES.map(t => t.traceId));
 
   // ─────────────────────────────────────────────────────────
-  //  BAKE — applique position + rotation à une géométrie
-  //  en espace monde (évite des Object3D superflus)
+  //  ACCUMULATEURS — traces décoratives (merge global)
   // ─────────────────────────────────────────────────────────
-  function bakeTransformToGeometry(geometry: THREE.BufferGeometry, posX: number, posY: number, posZ: number, rotationY: number): THREE.BufferGeometry {
-      const transformMatrix = new THREE.Matrix4();
-      transformMatrix.compose(
-          new THREE.Vector3(posX, posY, posZ),
-          new THREE.Quaternion().setFromEuler(new THREE.Euler(0, rotationY, 0)),
-          new THREE.Vector3(1, 1, 1)
-      );
-      const cloned = geometry.clone();
-      cloned.applyMatrix4(transformMatrix);
-      return cloned;
+  const staticBackGeos:    THREE.BufferGeometry[] = [];
+  const staticFilamentGeos:THREE.BufferGeometry[] = [];
+  const staticFrontGeos:   THREE.BufferGeometry[] = [];
+
+  // ─────────────────────────────────────────────────────────
+  //  MAP DE SORTIE — traces animables
+  // ─────────────────────────────────────────────────────────
+  const animatedTraceMap = new Map<string, AnimatedTrace>();
+
+
+  // ═══════════════════════════════════════════════════════════════
+  //  HELPERS GÉOMÉTRIE
+  // ═══════════════════════════════════════════════════════════════
+
+  function bakeTransform(
+    geometry: THREE.BufferGeometry,
+    posX: number, posY: number, posZ: number,
+    rotationY: number
+  ): THREE.BufferGeometry {
+    const matrix = new THREE.Matrix4();
+    matrix.compose(
+      new THREE.Vector3(posX, posY, posZ),
+      new THREE.Quaternion().setFromEuler(new THREE.Euler(0, rotationY, 0)),
+      new THREE.Vector3(1, 1, 1)
+    );
+    const cloned = geometry.clone();
+    cloned.applyMatrix4(matrix);
+    return cloned;
+  }
+
+  function mergeGeos(geos: THREE.BufferGeometry[]): THREE.BufferGeometry {
+    const nonIndexed = geos.map(geo => {
+      const ni = geo.toNonIndexed();
+      const pos = ni.attributes.position.array;
+      for (let i = 0; i < pos.length; i++) {
+        if (isNaN(pos[i])) (pos as Float32Array)[i] = 0;
+      }
+      return ni;
+    });
+
+    let totalVerts = 0;
+    nonIndexed.forEach(g => totalVerts += g.attributes.position.count);
+
+    const positions = new Float32Array(totalVerts * 3);
+    const normals   = new Float32Array(totalVerts * 3);
+    let offset = 0;
+
+    nonIndexed.forEach(g => {
+      positions.set(g.attributes.position.array, offset * 3);
+      if (g.attributes.normal) normals.set(g.attributes.normal.array, offset * 3);
+      offset += g.attributes.position.count;
+    });
+
+    const merged = new THREE.BufferGeometry();
+    merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    merged.setAttribute('normal',   new THREE.BufferAttribute(normals,   3));
+    merged.computeVertexNormals();
+    return merged;
+  }
+
+  function makeOpenTubeGeo(halfWidth: number, halfHeight: number, length: number) {
+    if (length < 0.001 || halfWidth < 0.0001 || halfHeight < 0.0001) return null;
+    const hl = length / 2;
+    const positions = new Float32Array([
+      -halfWidth, -halfHeight, -hl,
+       halfWidth, -halfHeight, -hl,
+       halfWidth,  halfHeight, -hl,
+      -halfWidth,  halfHeight, -hl,
+      -halfWidth, -halfHeight,  hl,
+       halfWidth, -halfHeight,  hl,
+       halfWidth,  halfHeight,  hl,
+      -halfWidth,  halfHeight,  hl,
+    ]);
+    const indices = new Uint16Array([
+      0,1,5, 0,5,4,
+      1,2,6, 1,6,5,
+      2,3,7, 2,7,6,
+      3,0,4, 3,4,7,
+    ]);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setIndex(new THREE.BufferAttribute(indices, 1));
+    geo.computeVertexNormals();
+    return geo;
+  }
+
+  function makeJunctionGeo(halfSize: number, height: number) {
+    if (halfSize < 0.0001 || height < 0.0001) return null;
+    const hh = height / 2;
+    const positions = new Float32Array([
+      -halfSize, -hh, -halfSize,
+       halfSize, -hh, -halfSize,
+       halfSize, -hh,  halfSize,
+      -halfSize, -hh,  halfSize,
+      -halfSize,  hh,  halfSize,
+       halfSize,  hh,  halfSize,
+       halfSize,  hh, -halfSize,
+      -halfSize,  hh, -halfSize,
+    ]);
+    const normals = new Float32Array([
+      0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0,
+      0, 1,0, 0, 1,0, 0, 1,0, 0, 1,0,
+    ]);
+    const indices = new Uint16Array([
+      0,1,2, 0,2,3,
+      4,5,6, 4,6,7,
+    ]);
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('normal',   new THREE.BufferAttribute(normals,   3));
+    geo.setIndex(new THREE.BufferAttribute(indices, 1));
+    return geo;
+  }
+
+
+  // ═══════════════════════════════════════════════════════════════
+  //  CONSTRUCTION D'UNE TRACE
+  //
+  //  Pousse les géométries dans les bons accumulateurs selon
+  //  que la trace est décorative (merge global) ou animable
+  //  (géométrie individuelle + matériaux glow dédiés).
+  // ═══════════════════════════════════════════════════════════════
+
+  function buildTraceGeometry(
+    points:    number[][],
+    tubeWidth: number,
+    backGeos:  THREE.BufferGeometry[],
+    filmGeos:  THREE.BufferGeometry[],
+    frontGeos: THREE.BufferGeometry[],
+  ) {
+    const push = (
+      target: THREE.BufferGeometry[],
+      geo:    THREE.BufferGeometry | null,
+      x: number, y: number, z: number, ry: number
+    ) => { if (geo) target.push(bakeTransform(geo, x, y, z, ry)); };
+
+    for (let i = 0; i < points.length - 1; i++) {
+      const [c0, r0] = points[i];
+      const [c1, r1] = points[i + 1];
+
+      const x0 = toWorldX(c0), z0 = toWorldZ(r0);
+      const x1 = toWorldX(c1), z1 = toWorldZ(r1);
+      const dx = x1 - x0, dz = z1 - z0;
+      const len = Math.sqrt(dx * dx + dz * dz);
+      if (len < 0.01) continue;
+
+      const ry  = Math.atan2(dx, dz);
+      const cx  = (x0 + x1) / 2;
+      const cz  = (z0 + z1) / 2;
+      const h   = tubeWidth;
+      const cy  = BOARD_SURFACE + h / 2;
+
+      // Tube
+      push(backGeos,  makeOpenTubeGeo(tubeWidth * 0.94 / 2, h * 0.94 / 2, len), cx, cy, cz, ry);
+      push(filmGeos,  makeOpenTubeGeo(tubeWidth * 0.26 / 2, h * 0.26 / 2, len), cx, cy, cz, ry);
+      push(frontGeos, makeOpenTubeGeo(tubeWidth / 2,        h / 2,         len), cx, cy, cz, ry);
+
+      // Jonction au waypoint de départ
+      const diag  = (tubeWidth / 2) * Math.SQRT2 * 0.52;
+      const jcy   = BOARD_SURFACE + h / 2;
+      push(backGeos,  makeJunctionGeo(diag * 0.94, h * 0.94), x0, jcy, z0, 0);
+      push(filmGeos,  makeJunctionGeo(diag * 0.26, h * 0.26), x0, jcy, z0, 0);
+      push(frontGeos, makeJunctionGeo(diag,        h        ), x0, jcy, z0, 0);
+    }
+
+    // Jonction terminale
+    const [cl, rl] = points[points.length - 1];
+    const xl = toWorldX(cl), zl = toWorldZ(rl);
+    const diag = (tubeWidth / 2) * Math.SQRT2 * 0.52;
+    const jcy  = BOARD_SURFACE + tubeWidth / 2;
+    push(backGeos,  makeJunctionGeo(diag * 0.94, tubeWidth * 0.94), xl, jcy, zl, 0);
+    push(filmGeos,  makeJunctionGeo(diag * 0.26, tubeWidth * 0.26), xl, jcy, zl, 0);
+    push(frontGeos, makeJunctionGeo(diag,        tubeWidth        ), xl, jcy, zl, 0);
   }
 
   // ─────────────────────────────────────────────────────────
-  //  MERGE — concatène des BufferGeometry non-indexées
-  //  en une seule (un seul draw call par matériau)
+  //  traceTubes — point d'entrée pour chaque trace PCB
+  //
+  //  Si traceId est fourni ET référencé dans ALL_TRACES :
+  //    → construction individuelle + entrée dans animatedTraceMap
+  //  Sinon :
+  //    → accumulation dans les buffers statiques (merge global)
   // ─────────────────────────────────────────────────────────
-  function mergeGeometries(geometries: THREE.BufferGeometry[]):THREE.BufferGeometry {
-      const nonIndexedGeometries = geometries.map((geo: THREE.BufferGeometry) => {
-          const nonIndexed = geo.toNonIndexed();
-          // Sécurité : remplace les NaN par 0 pour éviter les artefacts
-          const positions = nonIndexed.attributes.position.array;
-          for (let i = 0; i < positions.length; i++) {
-              if (isNaN(positions[i])) positions[i] = 0;
-          }
-          return nonIndexed;
+  function traceTubes(points: number[][], tubeWidth: number, traceId?: string) {
+
+    if (traceId && animatableIds.has(traceId)) {
+      // ── Trace animable ────────────────────────────────────
+
+      // Accumulateurs locaux à cette trace
+      const backGeos:  THREE.BufferGeometry[] = [];
+      const filmGeos:  THREE.BufferGeometry[] = [];
+      const frontGeos: THREE.BufferGeometry[] = [];
+
+      buildTraceGeometry(points, tubeWidth, backGeos, filmGeos, frontGeos);
+
+      // Calcul des segments world-space pour les uniforms shader
+      const traceSegments: TraceSegment[] = [];
+      let cumulative = 0;
+      for (let i = 0; i < points.length - 1; i++) {
+        const start = new THREE.Vector3(toWorldX(points[i][0]),   FILAMENT_Y, toWorldZ(points[i][1]));
+        const end   = new THREE.Vector3(toWorldX(points[i+1][0]), FILAMENT_Y, toWorldZ(points[i+1][1]));
+        const len   = start.distanceTo(end);
+        traceSegments.push({ segmentStart: start, segmentEnd: end, segmentLength: len, cumulativeStart: cumulative });
+        cumulative += len;
+      }
+
+      // Matériaux glow dédiés — segments encodés une fois pour toutes
+      const traceDef      = ALL_TRACES.find(t => t.traceId === traceId)!;
+      const glowColor     = new THREE.Color(traceDef.glowColor);
+      const frontSurface  = createGlowFrontMat(glowColor, traceSegments);
+      const innerSurface  = createGlowBackMat( glowColor, traceSegments);
+      const filamentCore  = createGlowFilamentMat(glowColor, traceSegments);
+
+      // Ajout à la scène
+      root.add(new THREE.Mesh(mergeGeos(backGeos),  innerSurface));
+      root.add(new THREE.Mesh(mergeGeos(filmGeos),  filamentCore));
+      root.add(new THREE.Mesh(mergeGeos(frontGeos), frontSurface));
+
+      // Entrée dans la map — prête pour updateAnimatedTrace()
+      animatedTraceMap.set(traceId, {
+        totalLength:    cumulative,
+        traceSegments,
+        glowMaterials:  { frontSurface, innerSurface, filamentCore },
+        animationState: {
+          distanceTravelled: 0,
+          animationPhase:    'fill',
+          phaseElapsedTime:  0,
+          startupDelay:      traceDef.startupDelay,
+          hasStarted:        false,
+        },
       });
 
-      // Compte le total de vertices pour allouer les buffers
-      let totalVertices = 0;
-      nonIndexedGeometries.forEach((geo: THREE.BufferGeometry) => {
-          totalVertices += geo.attributes.position.count;
-      });
-
-      const positionBuffer = new Float32Array(totalVertices * 3);
-      const normalBuffer   = new Float32Array(totalVertices * 3);
-
-      let vertexOffset = 0;
-      nonIndexedGeometries.forEach((geo: THREE.BufferGeometry) => {
-          positionBuffer.set(geo.attributes.position.array, vertexOffset * 3);
-          if (geo.attributes.normal) {
-              normalBuffer.set(geo.attributes.normal.array, vertexOffset * 3);
-          }
-          vertexOffset += geo.attributes.position.count;
-      });
-
-      const mergedGeometry = new THREE.BufferGeometry();
-      mergedGeometry.setAttribute('position', new THREE.BufferAttribute(positionBuffer, 3));
-      mergedGeometry.setAttribute('normal',   new THREE.BufferAttribute(normalBuffer,   3));
-      mergedGeometry.computeVertexNormals();
-
-      return mergedGeometry;
+    } else {
+      // ── Trace décorative — merge global ───────────────────
+      buildTraceGeometry(points, tubeWidth, staticBackGeos, staticFilamentGeos, staticFrontGeos);
+    }
   }
 
-  // ─────────────────────────────────────────────────────────
-   //  TUBE OUVERT — 4 faces latérales, bouts ouverts
-   //  halfWidth  : demi-largeur de la section (axe X local)
-   //  halfHeight : demi-hauteur de la section (axe Y local)
-   //  length     : longueur totale du tube (axe Z local)
-   // ─────────────────────────────────────────────────────────
-   function makeOpenTubeGeometry(halfWidth: number, halfHeight: number, length: number) {
-       if (length < 0.001 || halfWidth < 0.0001 || halfHeight < 0.0001) return null;
 
-       const halfLength = length / 2;
-
-       // 8 sommets du tube (section rectangulaire)
-       const positions = new Float32Array([
-           -halfWidth, -halfHeight, -halfLength,
-            halfWidth, -halfHeight, -halfLength,
-            halfWidth,  halfHeight, -halfLength,
-           -halfWidth,  halfHeight, -halfLength,
-           -halfWidth, -halfHeight,  halfLength,
-            halfWidth, -halfHeight,  halfLength,
-            halfWidth,  halfHeight,  halfLength,
-           -halfWidth,  halfHeight,  halfLength,
-       ]);
-
-       // Indices des triangles pour les 4 faces latérales
-       const indices = new Uint16Array([
-           0,1,5, 0,5,4,   // face bas
-           1,2,6, 1,6,5,   // face droite
-           2,3,7, 2,7,6,   // face haut
-           3,0,4, 3,4,7,   // face gauche
-       ]);
-
-       const geometry = new THREE.BufferGeometry();
-       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-       geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-       geometry.computeVertexNormals();
-
-       return geometry;
-   }
+  // ═══════════════════════════════════════════════════════════════
+  //  TRACÉ DES TRACES PCB
+  //  Syntaxe : traceTubes([[col, rang], ...], largeur, 'traceId'?)
+  //  Le traceId est optionnel — absent = trace décorative
+  // ═══════════════════════════════════════════════════════════════
+  traceTubes([[-5.65,2.35],[-5.65,3.35],[-5.5,3.5],[-5.5,10]], TRACE_WIDTH);
+  traceTubes([[-5.75,1.25],[-5.75,2.25],[-5,3],[-5,10]], TRACE_WIDTH);
+  traceTubes([[-6,-4],[-6,1],[-4.5,2.5],[-4.5,10]], TRACE_WIDTH);
+  traceTubes([[-5,-11.5],[-7,-9.5],[-7,-5],[-6.5,-4.5]], TRACE_WIDTH);
+  traceTubes([[-5,-20],[-5,-10.5],[-6.5,-9],[-6.5,-4.5],[-6,-4],[-6,-0],[-4,2],[-4,10]], TRACE_WIDTH);
+  traceTubes([[-3,-20],[-3,-11],[-5,-9],[-5,-8]], TRACE_WIDTH);
+  traceTubes([[-2.5,-20],[-2.5,-10.5],[-5.5,-7.5],[-5.5,-0.5],[-3.5,1.5],[-3.5,10]], TRACE_WIDTH);
+  traceTubes([[-1,-20],[-1,-11],[-5,-7],[-5,-1],[-3,1],[-3,10]], TRACE_WIDTH);
+  traceTubes([[-0.5,-20],[-0.5,-10.5],[-4.5,-6.5],[-4.5,-1.5],[-2.5,0.5],[-2.5,10]], TRACE_WIDTH, 'trace-02');
+  traceTubes([[0,-20],[0,-10],[-4,-6],[-4,-2],[-2,0],[-2,10]], TRACE_WIDTH);
+  traceTubes([[1,-20],[1,-9],[-3,-5],[-3,-3],[-2.5,-2.5],[-2.5,-0.5]], TRACE_WIDTH, 'trace-01');
+  traceTubes([[1.5,-20],[1.5,-8.5],[-2.5,-4.5],[-2.5,-3.5],[-2,-3],[-2.5,-2.5]], TRACE_WIDTH);
 
 
-   // ─────────────────────────────────────────────────────────
-   //  AJOUT D'UN TUBE en coordonnées monde
-   //  startX/Z   : point de départ
-   //  endX/Z     : point d'arrivée
-   //  tubeWidth  : largeur/épaisseur du tube
-   // ─────────────────────────────────────────────────────────
-   function addTube(startX: number, startZ: number, endX:   number, endZ:   number, tubeWidth: number) {
-       const deltaX      = endX - startX;
-       const deltaZ      = endZ - startZ;
-       const tubeLength  = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
-       if (tubeLength < 0.01) return;
+  // ═══════════════════════════════════════════════════════════════
+  //  MERGE FINAL — traces décoratives
+  //  Un seul draw call par matériau pour l'ensemble du décor
+  // ═══════════════════════════════════════════════════════════════
+  const staticMats = createStaticMaterials();
 
-       const rotationY   = Math.atan2(deltaX, deltaZ); // angle d'orientation du tube
-       const centerX     = (startX + endX) / 2;
-       const centerZ     = (startZ + endZ) / 2;
-       const tubeHeight  = tubeWidth; // section carrée
-       const centerY     = BOARD_SURFACE + tubeHeight / 2; // posé sur le board
+  if (staticBackGeos.length)     root.add(new THREE.Mesh(mergeGeos(staticBackGeos),     staticMats.glassBack));
+  if (staticFilamentGeos.length) root.add(new THREE.Mesh(mergeGeos(staticFilamentGeos), staticMats.filament));
+  if (staticFrontGeos.length)    root.add(new THREE.Mesh(mergeGeos(staticFrontGeos),    staticMats.glassFront));
 
-       // Chaque tube est créé en 3 épaisseurs (back, filament, front)
-       const pushToLayers = (
-           targetArray: THREE.BufferGeometry[],
-           scaleWidth: number,
-           scaleHeight: number
-       ) => {
-           const geo = makeOpenTubeGeometry(scaleWidth / 2, scaleHeight / 2, tubeLength);
-           if (geo) targetArray.push(
-               bakeTransformToGeometry(geo, centerX, centerY, centerZ, rotationY)
-           );
-       };
-
-       pushToLayers(backFaceGeometries,  tubeWidth * 0.94, tubeHeight * 0.94);
-       pushToLayers(filamentGeometries,  tubeWidth * 0.26, tubeHeight * 0.26);
-       pushToLayers(frontFaceGeometries, tubeWidth,        tubeHeight       );
-   }
-
-   // Variante de addTube en coordonnées de grille
-   function addTubeOnGrid(startColumn: number, startRow: number, endColumn:   number, endRow:   number, tubeWidth:   number) {
-       addTube(
-           gridX(startColumn), gridZ(startRow),
-           gridX(endColumn),   gridZ(endRow),
-           tubeWidth
-       );
-   }
-
-
-   // ─────────────────────────────────────────────────────────
-      //  JONCTION — faces haut et bas uniquement
-      //  Couvre les angles à 45° entre deux tubes
-      //  La taille est multipliée par √2 pour couvrir la diagonale
-      // ─────────────────────────────────────────────────────────
-      function makeJunctionGeometry(halfSize: number, height: number) {
-          if (halfSize < 0.0001 || height < 0.0001) return null;
-
-          const positions = new Float32Array([
-              // Face bas (normale vers le bas)
-              -halfSize, -height/2, -halfSize,
-               halfSize, -height/2, -halfSize,
-               halfSize, -height/2,  halfSize,
-              -halfSize, -height/2,  halfSize,
-              // Face haut (normale vers le haut)
-              -halfSize,  height/2,  halfSize,
-               halfSize,  height/2,  halfSize,
-               halfSize,  height/2, -halfSize,
-              -halfSize,  height/2, -halfSize,
-          ]);
-
-          const normals = new Float32Array([
-              0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0, // bas
-              0, 1,0, 0, 1,0, 0, 1,0, 0, 1,0, // haut
-          ]);
-
-          const indices = new Uint16Array([
-              0,1,2, 0,2,3, // face bas
-              4,5,6, 4,6,7, // face haut
-          ]);
-
-          const geometry = new THREE.BufferGeometry();
-          geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-          geometry.setAttribute('normal',   new THREE.BufferAttribute(normals,   3));
-          geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-
-          return geometry;
-      }
-
-
-      // ─────────────────────────────────────────────────────────
-      //  AJOUT D'UNE JONCTION en coordonnées monde
-      //  Placée à chaque coude et extrémité de trace
-      // ─────────────────────────────────────────────────────────
-      function addJunction(posX: number, posZ: number, tubeWidth: number) {
-          const junctionHeight  = tubeWidth;
-          const centerY         = BOARD_SURFACE + junctionHeight / 2;
-          // √2 * 0.52 pour couvrir la diagonale à 45° sans dépasser
-          const diagonalCover   = (tubeWidth / 2) * Math.SQRT2 * 0.52;
-
-          const pushToLayers = (
-              targetArray: THREE.BufferGeometry[],
-              scaleSize: number,
-              scaleHeight: number
-          ) => {
-              const geo = makeJunctionGeometry(scaleSize, scaleHeight);
-              if (geo) targetArray.push(
-                  bakeTransformToGeometry(geo, posX, centerY, posZ, 0)
-              );
-          };
-
-          pushToLayers(backFaceGeometries,  diagonalCover * 0.94, junctionHeight * 0.94);
-          pushToLayers(filamentGeometries,  diagonalCover * 0.26, junctionHeight * 0.26);
-          pushToLayers(frontFaceGeometries, diagonalCover,        junctionHeight       );
-      }
-
-      // Variante de addJunction en coordonnées de grille
-      function addJunctionOnGrid(column: number, row: number, tubeWidth: number) {
-          addJunction(gridX(column), gridZ(row), tubeWidth);
-      }
-
-      // ─────────────────────────────────────────────────────────
-      //  TRACE — enchaîne des points pour former une trace PCB
-      //  Pose automatiquement les tubes + jonctions à chaque coude
-      //
-      //  points    : tableau de [colonne, rangée] en coordonnées grille
-      //  tubeWidth : largeur des tubes de la trace
-      //
-      //  Pour dessiner une trace, liste les points de passage :
-      //  traceTubes([[colDépart, rangDépart], [col1, rang1], ..., [colFin, rangFin]], largeur)
-      // ─────────────────────────────────────────────────────────
-      function traceTubes(points: number[][], tubeWidth: number) {
-          for (let pointIndex = 0; pointIndex < points.length - 1; pointIndex++) {
-              addTubeOnGrid(
-                  points[pointIndex][0],     points[pointIndex][1],
-                  points[pointIndex + 1][0], points[pointIndex + 1][1],
-                  tubeWidth
-              );
-              addJunctionOnGrid(points[pointIndex][0], points[pointIndex][1], tubeWidth);
-          }
-          // Jonction sur le dernier point
-          addJunctionOnGrid(points[points.length - 1][0], points[points.length - 1][1], tubeWidth);
-      }
-
-      // Largeur des traces principales
-      const TRACE_WIDTH  = 0.22;
-
-      // ─────────────────────────────────────────────────────────
-      //  TRACÉ DES TRACES PCB
-      //  Syntaxe : traceTubes([[col, rang], ...], largeur)
-      //  Les colonnes/rangées sont des coordonnées de grille
-      //  (multipliées par GRID_UNIT pour obtenir les coords monde)
-      // ─────────────────────────────────────────────────────────
-      traceTubes([[-5.65,2.35],[-5.65,3.35], [-5.5,3.5], [-5.5,10]], TRACE_WIDTH);
-      traceTubes([[-5.75,1.25],[-5.75,2.25], [-5,3], [-5,10]], TRACE_WIDTH);
-      traceTubes([[-6,-4],[-6,1], [-4.5,2.5], [-4.5,10]], TRACE_WIDTH);
-      traceTubes([[-5,-11.5],[-7,-9.5],[-7,-5],[-6.5,-4.5]], TRACE_WIDTH);
-      traceTubes([[-5  ,-20],[-5,-10.5],[-6.5,-9],[-6.5,-4.5],[-6,-4], [-6,-0], [-4,2], [-4,10]], TRACE_WIDTH);
-      traceTubes([[-3  ,-20],[-3,    -11],[-5,-9],[-5,-8]],    TRACE_WIDTH);
-      traceTubes([[-2.5,-20],[-2.5,-10.5], [-5.5,-7.5],[-5.5,-0.5],[-3.5, 1.5],[-3.5,10]],  TRACE_WIDTH);
-      traceTubes([[-1  ,-20],[-1    ,-11], [-5,    -7],[-5,    -1],[-3,     1],[-3,10]], TRACE_WIDTH);
-      traceTubes([[-0.5,-20],[-0.5,-10.5], [-4.5,-6.5],[-4.5,-1.5],[-2.5, 0.5],[-2.5,10]], TRACE_WIDTH);
-      traceTubes([[0   ,-20],[0     ,-10], [-4,    -6],[-4,    -2],[-2,     0], [-2,10]], TRACE_WIDTH);
-      traceTubes([[1   ,-20],[1      ,-9], [-3,    -5],[-3    ,-3],[-2.5,-2.5], [-2.5,-0.5]], TRACE_WIDTH);
-      traceTubes([[1.5 ,-20],[1.5  ,-8.5], [-2.5,-4.5],[-2.5,-3.5],[-2,    -3], [-2.5,-2.5]], TRACE_WIDTH);
-
-      // ─────────────────────────────────────────────────────────
-      //  MERGE FINAL — un seul draw call par matériau
-      // ─────────────────────────────────────────────────────────
-      function mergeAndAddToScene(geometries: THREE.BufferGeometry[], material: THREE.Material) {
-          if (!geometries.length) return;
-          const merged = mergeGeometries(geometries);
-          root.add(new THREE.Mesh(merged, material));
-      }
-
-      mergeAndAddToScene(backFaceGeometries,  materials.matGlassBack);
-      mergeAndAddToScene(filamentGeometries,  materials.matFilament);
-      mergeAndAddToScene(frontFaceGeometries, materials.matGlassFront);
+  return animatedTraceMap;
 }

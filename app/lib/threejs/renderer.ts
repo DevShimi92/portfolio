@@ -49,9 +49,6 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   dir.position.set(12, 28, 8);
   scene.add(dir);
 
-  // Direction lumiere en espace camera (approximee depuis la dirLight)
-  const lightDirection = dir.position.clone().normalize();
-
   // ─────────────────────────────────────────────────────────
   // Camera
   // ─────────────────────────────────────────────────────────
@@ -107,6 +104,6 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   mount.appendChild(renderer.domElement);
 
   return {
-    renderer, scene, camera, lightDirection,
+    renderer, scene, camera,
     cleanEventResize: () => window.removeEventListener('resize', onResize)};
 }

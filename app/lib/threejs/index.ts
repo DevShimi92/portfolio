@@ -1,75 +1,57 @@
 import * as THREE from 'three';
 import { Renderer } from './renderer';
 import { buildBoard } from './buildBoard';
-import { createMaterials } from './materials';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
-import { initAnimatedTrace, updateAnimatedTrace } from './animatedTrace';
+import { updateAnimatedTrace } from './animatedTrace';
 import { initElectricArcPool, updateElectricArcs, ElectricArcPool } from './electricArcs';
 import { TRACE_SCRIPTS, DEFAULT_SCRIPT, resolveActiveTraces, resolveAnimationConfig } from './traceRegistry';
 
 
-let currentAnimationConfig = resolveAnimationConfig(TRACE_SCRIPTS[DEFAULT_SCRIPT]);
-
 export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {
 
-  const { renderer, scene, camera, lightDirection, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
+  const { renderer, scene, camera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
 
-  const materials = createMaterials(perfLevel);
-  if(perfLevel == 'full') materials.matGlassFront.uniforms.uLightDir.value.copy(lightDirection);
+  // buildBoard construit toute la scène et retourne les traces animables
+   const animatedTraceMap = buildBoard(scene);
 
-  buildBoard(scene, materials);
+   const activeAnimatedTraces: AnimatedTrace[]  = [];
+   const activeArcPools:       ElectricArcPool[] = [];
 
-  const activeAnimatedTraces: AnimatedTrace[] = [];
-  const activeArcPools:       ElectricArcPool[] = [];
+   let currentAnimationConfig = resolveAnimationConfig(TRACE_SCRIPTS[DEFAULT_SCRIPT]);
 
-  if (perfLevel === 'full') {
-    const activeScript        = TRACE_SCRIPTS[DEFAULT_SCRIPT];
-    const activeTracesDefs    = resolveActiveTraces(activeScript);
-    const activeConfig        = resolveAnimationConfig(activeScript);
+   if (perfLevel === 'full') {
+     const activeScript = TRACE_SCRIPTS[DEFAULT_SCRIPT];
+     currentAnimationConfig = resolveAnimationConfig(activeScript);
 
-    activeTracesDefs.forEach(traceDef => {
-      const initializedTrace = initAnimatedTrace(
-        traceDef.waypointsInGrid,
-        new THREE.Color(traceDef.glowColor),
-        traceDef.startupDelay,
-        scene
-      );
-      activeAnimatedTraces.push(initializedTrace);
+     resolveActiveTraces(activeScript).forEach(traceDef => {
+       const trace = animatedTraceMap.get(traceDef.traceId);
+       if (!trace) return; // traceId non construit dans buildBoard — ignoré silencieusement
 
-      const arcPool = initElectricArcPool(
-        new THREE.Color(traceDef.glowColor),
-        scene
-      );
-      activeArcPools.push(arcPool);
-
-    });
-
-    // On stocke la config résolue pour qu'elle soit accessible
-    // dans le tick sans avoir à la recalculer à chaque frame
-    currentAnimationConfig = activeConfig;
-
-  }
+       activeAnimatedTraces.push(trace);
+       activeArcPools.push(initElectricArcPool(new THREE.Color(traceDef.glowColor), scene));
+     });
+   }
 
   // Appelé par renderer.ts à chaque frame via le callback onAnimationTick
   function onAnimationTick(deltaTime: number) {
-    activeAnimatedTraces.forEach((animatedTrace, traceIndex) => {
-      updateAnimatedTrace(animatedTrace, deltaTime, currentAnimationConfig);
+    activeAnimatedTraces.forEach((trace, i) => {
+      updateAnimatedTrace(trace, deltaTime, currentAnimationConfig);
 
-      const brightness = !animatedTrace.animationState.hasStarted
-          ? 0
-          : animatedTrace.animationState.animationPhase === 'fade'
-            ? Math.max(0, 1 - animatedTrace.animationState.phaseElapsedTime / currentAnimationConfig.fadeDuration)
-            : 1;
+      // Brightness calculée depuis la phase courante — transmise aux arcs
+      const brightness = !trace.animationState.hasStarted
+        ? 0
+        : trace.animationState.animationPhase === 'fade'
+          ? Math.max(0, 1 - trace.animationState.phaseElapsedTime / currentAnimationConfig.fadeDuration)
+          : 1;
 
       updateElectricArcs(
-        activeArcPools[traceIndex],
-        animatedTrace.traceSegments,
-        animatedTrace.animationState.distanceTravelled,
-        brightness,   // calculé depuis la phase courante
+        activeArcPools[i],
+        trace.traceSegments,
+        trace.animationState.distanceTravelled,
+        brightness,
         deltaTime,
         currentAnimationConfig
       );
-
     });
   }
 

@@ -52,15 +52,15 @@ export const DEFAULT_ANIMATION_CONFIG: TraceAnimationConfig = {
 export const ALL_TRACES: TraceDefinition[] = [
   {
     traceId:         'trace-01',
-    waypointsInGrid: [[-2, -10], [-2, -1], [1, 3], [1, 15]],
+    waypointsInGrid: [[1,-20],[1,-9],[-3,-5],[-3,-3],[-2.5,-2.5],[-2.5,-0.5]],
     glowColor:       0x00eeff,
     startupDelay:    0,
   },
   {
     traceId:         'trace-02',
-    waypointsInGrid: [[-2.5, -10], [-2.5, -0.5], [0.5, 3.5], [0.5, 15]],
+    waypointsInGrid: [[-0.5,-20],[-0.5,-10.5],[-4.5,-6.5],[-4.5,-1.5],[-2.5,0.5],[-2.5,10]],
     glowColor:       0x55ffdd,
-    startupDelay:    0.6,
+    startupDelay:    0.10,
   },
   // ── Traces supplémentaires à ajouter au fur et à mesure ──
   // {

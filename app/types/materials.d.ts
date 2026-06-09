@@ -1,5 +1,7 @@
+import * as THREE from 'three';
+
 export interface Materials {
-    matGlassBack:  THREE.MeshPhysicalMaterial | MeshStandardMaterial
-    matGlassFront: THREE.ShaderMaterial
-    matFilament:   THREE.MeshStandardMaterial
+  glassBack:  THREE.ShaderMaterial;
+  glassFront: THREE.ShaderMaterial;
+  filament:   THREE.ShaderMaterial;
 }

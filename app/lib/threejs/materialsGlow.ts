@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { TraceSegment } from '@/app/types/traceSegment';
+import { Materials } from '@/app/types/materials';
+
 // ─────────────────────────────────────────────────────────
 //  CONSTANTE — nombre maximum de segments par trace
 //
@@ -9,7 +11,7 @@ import { TraceSegment } from '@/app/types/traceSegment';
 //  Si une trace future dépasse 4 segments, augmenter cette valeur
 //  ET mettre à jour le #define dans GLSL_POLYLINE_PROJECTION.
 // ─────────────────────────────────────────────────────────
-const MAX_SEGMENTS_PER_TRACE = 4;
+const MAX_SEGMENTS_PER_TRACE = 6;
 
 // ─────────────────────────────────────────────────────────
 //  GLSL PARTAGÉ — projection d'un fragment sur la polyligne
@@ -87,6 +89,25 @@ const GLSL_POLYLINE_PROJECTION = `
   }
 `;
 
+
+// ─────────────────────────────────────────────────────────
+//  HELPER — uniforms de segments vides
+//
+//  Utilisé par createStaticGlowMat() — les traces décoratives
+//  n'ont pas de segments à encoder, on remplit avec des
+//  valeurs neutres garantissant que le shader n'allume rien.
+// ─────────────────────────────────────────────────────────
+function buildEmptySegmentUniforms() {
+  const empty = Array(MAX_SEGMENTS_PER_TRACE).fill(0);
+  return {
+    uSegmentStarts:           { value: Array(MAX_SEGMENTS_PER_TRACE * 3).fill(0) },
+    uSegmentEnds:             { value: Array(MAX_SEGMENTS_PER_TRACE * 3).fill(0) },
+    uSegmentCumulativeStarts: { value: empty.map(() => 9999) },
+    uSegmentLengths:          { value: empty },
+    uSegmentCount:            { value: 0 },
+  };
+}
+
 // ─────────────────────────────────────────────────────────
 //  HELPER — encode les segments TypeScript en uniforms GLSL
 //
@@ -100,10 +121,10 @@ const GLSL_POLYLINE_PROJECTION = `
 //    - segmentLength   = 0    → segment ignoré (< 0.001)
 // ─────────────────────────────────────────────────────────
 function buildSegmentUniforms(segments: TraceSegment[]) {
-  const flatStarts:      number[] = [];
-  const flatEnds:        number[] = [];
+  const flatStarts:       number[] = [];
+  const flatEnds:         number[] = [];
   const cumulativeStarts: number[] = [];
-  const segmentLengths:  number[] = [];
+  const segmentLengths:   number[] = [];
 
   for (let slotIndex = 0; slotIndex < MAX_SEGMENTS_PER_TRACE; slotIndex++) {
     const segment = segments[slotIndex];
@@ -132,6 +153,34 @@ function buildSegmentUniforms(segments: TraceSegment[]) {
 }
 
 
+// ═══════════════════════════════════════════════════════════════
+//  MATÉRIAUX STATIQUES — traces décoratives (board de fond)
+//
+//  Un seul jeu de 3 matériaux partagés entre toutes les traces
+//  non-animables. Pas de segments encodés, uBrightness fixé à 0
+//  — le shader se comporte comme l'ancien matGlass/Filament.
+//
+//  Appelé une seule fois dans buildBoard.ts.
+// ═══════════════════════════════════════════════════════════════
+export function createStaticMaterials(): Materials {
+  return {
+    glassFront: createGlowFrontMat(new THREE.Color(0x00eeff), []),
+    glassBack:  createGlowBackMat( new THREE.Color(0x00eeff), []),
+    filament:   createGlowFilamentMat(new THREE.Color(0x00eeff), []),
+  };
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  MATÉRIAUX GLOW — traces animables
+//
+//  Une instance par trace animable, créée dans buildBoard.ts
+//  au moment de la construction. Les segments sont encodés
+//  une fois pour toutes — ils ne changent pas au runtime.
+//  Seuls uFrontDistance et uBrightness sont mis à jour chaque frame.
+// ═══════════════════════════════════════════════════════════════
+
+
 // ─────────────────────────────────────────────────────────
 //  MATÉRIAU GLOW — FrontSide (surface externe du tube)
 //
@@ -143,11 +192,15 @@ function buildSegmentUniforms(segments: TraceSegment[]) {
 //    uBrightness    — multiplicateur global 0→1 (fade out)
 //
 //  Uniforms de réglage visuel :
-//    uGlowColor     — couleur de la lumière
-//    uGlowIntensity — puissance du glow
+//    uGlowColor       — couleur de la lumière
+//    uGlowIntensity   — puissance du glow
 //    uFrontHaloLength — longueur du pic lumineux au bord d'attaque
 // ─────────────────────────────────────────────────────────
-export function createGlowFrontMat(glowColor: THREE.Color, segments:  TraceSegment[]): THREE.ShaderMaterial {
+export function createGlowFrontMat(glowColor: THREE.Color, segments: TraceSegment[]): THREE.ShaderMaterial {
+  const segmentUniforms = segments.length > 0
+    ? buildSegmentUniforms(segments)
+    : buildEmptySegmentUniforms();
+
   return new THREE.ShaderMaterial({
     uniforms: {
       // Fresnel de base
@@ -164,7 +217,7 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments:  TraceSegme
       uGlowIntensity:   { value: 2.5 },
       uBrightness:      { value: 0.0 },
       // Segments de la polyligne
-      ...buildSegmentUniforms(segments),
+      ...segmentUniforms,
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -198,15 +251,13 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments:  TraceSegme
         float fresnelFactor = pow(1.0 - cosAngle, uFresnelPower);
 
         // Couleur de base verre + specular directionnel
-        vec3 color    = mix(uGlassColor, uRimColor, fresnelFactor * 0.8);
-        vec3 lightDir = normalize(uLightDir);
+        vec3 color     = mix(uGlassColor, uRimColor, fresnelFactor * 0.8);
+        vec3 lightDir  = normalize(uLightDir);
         vec3 reflected = reflect(-lightDir, normal);
         color += vec3(pow(max(dot(reflected, viewDir), 0.0), 64.0) * 0.6);
 
         // Distance du fragment depuis le début de la trace
-        float fragmentDistance = computeFragmentDistanceOnTrace(vWorldPosition);
-
-        // distanceBehindFront > 0 si le fragment est dans la zone déjà parcourue
+        float fragmentDistance    = computeFragmentDistanceOnTrace(vWorldPosition);
         float distanceBehindFront = uFrontDistance - fragmentDistance;
         float isLit               = step(0.0, distanceBehindFront);
 
@@ -238,7 +289,11 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments:  TraceSegme
 //  Shader dédié sans Fresnel de fond — uniquement le glow.
 //  Plus sombre que le FrontSide, contribue à la profondeur.
 // ─────────────────────────────────────────────────────────
-export function createGlowBackMat(glowColor: THREE.Color, segments:  TraceSegment[]): THREE.ShaderMaterial {
+export function createGlowBackMat(glowColor: THREE.Color, segments: TraceSegment[]): THREE.ShaderMaterial {
+  const segmentUniforms = segments.length > 0
+    ? buildSegmentUniforms(segments)
+    : buildEmptySegmentUniforms();
+
   return new THREE.ShaderMaterial({
     uniforms: {
       uGlowColor:       { value: glowColor.clone() },
@@ -247,7 +302,7 @@ export function createGlowBackMat(glowColor: THREE.Color, segments:  TraceSegmen
       uFrontHaloLength: { value: 6.0 },
       uGlowIntensity:   { value: 2.5 },
       uBrightness:      { value: 0.0 },
-      ...buildSegmentUniforms(segments),
+      ...segmentUniforms,
     },
     vertexShader: `
       varying vec3 vNormal;
@@ -274,11 +329,11 @@ export function createGlowBackMat(glowColor: THREE.Color, segments:  TraceSegmen
       varying vec3 vWorldPosition;
 
       void main() {
-        vec3  normal        = normalize(vNormal);
-        vec3  viewDir       = normalize(vViewDir);
-        float cosAngle      = clamp(dot(normal, viewDir), 0.0, 1.0);
+        vec3  normal       = normalize(vNormal);
+        vec3  viewDir      = normalize(vViewDir);
+        float cosAngle     = clamp(dot(normal, viewDir), 0.0, 1.0);
         // Fresnel inverse — côté intérieur du verre
-        float fresnelInner  = pow(1.0 - cosAngle, 2.5);
+        float fresnelInner = pow(1.0 - cosAngle, 2.5);
 
         float fragmentDistance    = computeFragmentDistanceOnTrace(vWorldPosition);
         float distanceBehindFront = uFrontDistance - fragmentDistance;
@@ -288,7 +343,7 @@ export function createGlowBackMat(glowColor: THREE.Color, segments:  TraceSegmen
         float frontPeakIntensity      = isLit * exp(-normalizedDistFromFront * 14.0);
 
         // Base sombre du verre, s'illumine sur la zone parcourue
-        vec3 color    = uGlassBaseColor * 0.12;
+        vec3 color     = uGlassBaseColor * 0.12;
         vec3 glowColor = mix(uGlowColor, vec3(1.0, 1.0, 1.0), frontPeakIntensity * 0.6);
         color += glowColor * isLit * uGlowIntensity * 0.7 * uBrightness;
         color  = mix(color, uGlowColor * 0.3, fresnelInner * frontPeakIntensity * 0.4 * uBrightness);
@@ -312,7 +367,11 @@ export function createGlowBackMat(glowColor: THREE.Color, segments:  TraceSegmen
 //  blanc chaud au bord d'attaque, couleur pure derrière.
 //  Très sombre au repos (quasi invisible sans glow).
 // ─────────────────────────────────────────────────────────
-export function createGlowFilamentMat(glowColor: THREE.Color, segments:  TraceSegment[]): THREE.ShaderMaterial {
+export function createGlowFilamentMat(glowColor: THREE.Color, segments: TraceSegment[]): THREE.ShaderMaterial {
+  const segmentUniforms = segments.length > 0
+    ? buildSegmentUniforms(segments)
+    : buildEmptySegmentUniforms();
+
   return new THREE.ShaderMaterial({
     uniforms: {
       uGlowColor:       { value: glowColor.clone() },
@@ -320,7 +379,7 @@ export function createGlowFilamentMat(glowColor: THREE.Color, segments:  TraceSe
       uFrontHaloLength: { value: 6.0 },
       uGlowIntensity:   { value: 2.5 },
       uBrightness:      { value: 0.0 },
-      ...buildSegmentUniforms(segments),
+      ...segmentUniforms,
     },
     vertexShader: `
       varying vec3 vWorldPosition;

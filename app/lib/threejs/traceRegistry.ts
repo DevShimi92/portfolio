@@ -31,6 +31,11 @@ export const DEFAULT_ANIMATION_CONFIG: TraceAnimationConfig = {
   fadeDuration:    0.8,
   glowIntensity:   2.5,
   frontHaloLength: 6.0,
+  arcDensity:   12,
+  arcAmplitude: 0.18,
+  arcReach:     0.5,
+  arcNervosity: 12,
+  arcIntensity: 0.7,
 };
 
 

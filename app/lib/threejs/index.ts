@@ -4,6 +4,7 @@ import { buildBoard } from './buildBoard';
 import { createMaterials } from './materials';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
 import { initAnimatedTrace, updateAnimatedTrace } from './animatedTrace';
+import { initElectricArcPool, updateElectricArcs, ElectricArcPool } from './electricArcs';
 import { TRACE_SCRIPTS, DEFAULT_SCRIPT, resolveActiveTraces, resolveAnimationConfig } from './traceRegistry';
 
 
@@ -19,6 +20,7 @@ export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: strin
   buildBoard(scene, materials);
 
   const activeAnimatedTraces: AnimatedTrace[] = [];
+  const activeArcPools:       ElectricArcPool[] = [];
 
   if (perfLevel === 'full') {
     const activeScript        = TRACE_SCRIPTS[DEFAULT_SCRIPT];
@@ -33,17 +35,41 @@ export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: strin
         scene
       );
       activeAnimatedTraces.push(initializedTrace);
+
+      const arcPool = initElectricArcPool(
+        new THREE.Color(traceDef.glowColor),
+        scene
+      );
+      activeArcPools.push(arcPool);
+
     });
 
     // On stocke la config résolue pour qu'elle soit accessible
     // dans le tick sans avoir à la recalculer à chaque frame
     currentAnimationConfig = activeConfig;
+
   }
 
   // Appelé par renderer.ts à chaque frame via le callback onAnimationTick
   function onAnimationTick(deltaTime: number) {
-    activeAnimatedTraces.forEach(animatedTrace => {
+    activeAnimatedTraces.forEach((animatedTrace, traceIndex) => {
       updateAnimatedTrace(animatedTrace, deltaTime, currentAnimationConfig);
+
+      const brightness = !animatedTrace.animationState.hasStarted
+          ? 0
+          : animatedTrace.animationState.animationPhase === 'fade'
+            ? Math.max(0, 1 - animatedTrace.animationState.phaseElapsedTime / currentAnimationConfig.fadeDuration)
+            : 1;
+
+      updateElectricArcs(
+        activeArcPools[traceIndex],
+        animatedTrace.traceSegments,
+        animatedTrace.animationState.distanceTravelled,
+        brightness,   // calculé depuis la phase courante
+        deltaTime,
+        currentAnimationConfig
+      );
+
     });
   }
 

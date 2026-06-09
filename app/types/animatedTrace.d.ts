@@ -12,7 +12,8 @@
 // ─────────────────────────────────────────────────────────
 export interface AnimatedTrace {
   animationState: TraceAnimationState;
-  totalLength:    number;
+  totalLength: number;
+  traceSegments:  TraceSegment[];
   glowMaterials: {
     frontSurface: THREE.ShaderMaterial;   // surface externe du tube
     innerSurface: THREE.ShaderMaterial;   // intérieur du tube (BackSide)

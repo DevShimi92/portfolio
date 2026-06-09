@@ -282,6 +282,7 @@ export function initAnimatedTrace(waypointsInGrid: [number, number][], initialGl
 
   return {
     totalLength,
+    traceSegments,
     glowMaterials: {
       frontSurface: frontSurfaceMat,
       innerSurface: innerSurfaceMat,

@@ -19,4 +19,9 @@ export interface TraceAnimationConfig {
   fadeDuration:    number;
   glowIntensity:   number;
   frontHaloLength: number;
+  arcDensity:      number;
+  arcAmplitude:    number;
+  arcReach:        number;
+  arcNervosity:    number;
+  arcIntensity:    number;
 }

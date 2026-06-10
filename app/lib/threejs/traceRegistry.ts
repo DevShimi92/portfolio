@@ -1,6 +1,7 @@
 import { TraceAnimationConfig } from '@/app/types/traceAnimationConfig';
 import { TraceDefinition } from '@/app/types/traceDefinition';
 import { TraceScript } from '@/app/types/traceScript';
+import { GRID_UNIT } from './boardConstants';
 // ═══════════════════════════════════════════════════════════════
 //  TRACE REGISTRY
 //
@@ -53,14 +54,12 @@ export const ALL_TRACES: TraceDefinition[] = [
   {
     traceId:         'trace-01',
     waypointsInGrid: [[1,-20],[1,-9],[-3,-5],[-3,-3],[-2.5,-2.5],[-2.5,-0.5]],
-    glowColor:       0x00eeff,
-    startupDelay:    0,
+    glowColor:       0x00eeff
   },
   {
     traceId:         'trace-02',
-    waypointsInGrid: [[-0.5,-20],[-0.5,-10.5],[-4.5,-6.5],[-4.5,-1.5],[-2.5,0.5],[-2.5,10]],
-    glowColor:       0x55ffdd,
-    startupDelay:    0.10,
+    waypointsInGrid: [],
+    glowColor:       0xfc2803
   },
   // ── Traces supplémentaires à ajouter au fur et à mesure ──
   // {
@@ -84,7 +83,11 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
 
   'default': {
     scriptId:       'default',
-    activeTraceIds: [],
+    activeTraceIds: ['trace-01','trace-02'],
+    startupDelays: {
+        'trace-01': { delay: 0 },
+        'trace-02': { delay: 0.85, startDistance: 41.1 },
+      },
     // Pas d'override — utilise DEFAULT_ANIMATION_CONFIG
   },
 
@@ -139,4 +142,34 @@ export function resolveActiveTraces(script: TraceScript): TraceDefinition[] {
   return script.activeTraceIds
     .map(id => ALL_TRACES.find(trace => trace.traceId === id))
     .filter((trace): trace is TraceDefinition => trace !== undefined);
+}
+
+// ─────────────────────────────────────────────────────────
+//  HELPER — résout le startupDelay d'une trace pour un script
+//
+//  Si le script ne définit pas de délai pour cette trace,
+//  retourne 0 — la trace démarre immédiatement.
+// ─────────────────────────────────────────────────────────
+export function resolveStartupDelay(script: TraceScript, traceId: string): number {
+  return script.startupDelays?.[traceId]?.delay ?? 0;
+}
+
+
+export function resolveDistanceAtWaypoint(traceId: string, waypointIndex: number): number {
+  const traceDef = ALL_TRACES.find(t => t.traceId === traceId);
+  if (!traceDef) return 0;
+
+  let cumulativeDistance = 0;
+
+  for (let i = 0; i < waypointIndex; i++) {
+    const [colStart, rowStart] = traceDef.waypointsInGrid[i];
+    const [colEnd,   rowEnd  ] = traceDef.waypointsInGrid[i + 1];
+
+    const worldDeltaX = (colEnd - colStart) * GRID_UNIT;
+    const worldDeltaZ = (rowEnd - rowStart) * GRID_UNIT;
+
+    cumulativeDistance += Math.sqrt(worldDeltaX * worldDeltaX + worldDeltaZ * worldDeltaZ);
+  }
+
+  return cumulativeDistance;
 }

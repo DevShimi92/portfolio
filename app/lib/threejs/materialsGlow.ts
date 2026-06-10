@@ -11,7 +11,7 @@ import { Materials } from '@/app/types/materials';
 //  Si une trace future dépasse 4 segments, augmenter cette valeur
 //  ET mettre à jour le #define dans GLSL_POLYLINE_PROJECTION.
 // ─────────────────────────────────────────────────────────
-const MAX_SEGMENTS_PER_TRACE = 6;
+const MAX_SEGMENTS_PER_TRACE = 4;
 
 // ─────────────────────────────────────────────────────────
 //  GLSL PARTAGÉ — projection d'un fragment sur la polyligne
@@ -212,6 +212,7 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments: TraceSegmen
       uLightDir:        { value: new THREE.Vector3(0.5, 1.0, 0.3).normalize() },
       // Glow animé
       uGlowColor:       { value: glowColor.clone() },
+      uStartDistance:   { value: 0.0 },
       uFrontDistance:   { value: 0.0 },
       uFrontHaloLength: { value: 6.0 },
       uGlowIntensity:   { value: 2.5 },
@@ -238,7 +239,7 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments: TraceSegmen
 
       uniform vec3  uGlassColor, uRimColor, uLightDir, uGlowColor;
       uniform float uFresnelPower, uOpacityCenter, uOpacityRim;
-      uniform float uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
+      uniform float uStartDistance, uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
 
       varying vec3 vNormal;
       varying vec3 vViewDir;
@@ -259,7 +260,7 @@ export function createGlowFrontMat(glowColor: THREE.Color, segments: TraceSegmen
         // Distance du fragment depuis le début de la trace
         float fragmentDistance    = computeFragmentDistanceOnTrace(vWorldPosition);
         float distanceBehindFront = uFrontDistance - fragmentDistance;
-        float isLit               = step(0.0, distanceBehindFront);
+        float isLit               = step(uStartDistance, fragmentDistance) * step(0.0, distanceBehindFront);
 
         // Pic blanc chaud uniquement dans la fenêtre proche du front
         float normalizedDistFromFront = clamp(distanceBehindFront / uFrontHaloLength, 0.0, 1.0);
@@ -298,6 +299,7 @@ export function createGlowBackMat(glowColor: THREE.Color, segments: TraceSegment
     uniforms: {
       uGlowColor:       { value: glowColor.clone() },
       uGlassBaseColor:  { value: new THREE.Color(0x55bbdd) },
+      uStartDistance:   { value: 0.0 },
       uFrontDistance:   { value: 0.0 },
       uFrontHaloLength: { value: 6.0 },
       uGlowIntensity:   { value: 2.5 },
@@ -322,7 +324,7 @@ export function createGlowBackMat(glowColor: THREE.Color, segments: TraceSegment
       ${GLSL_POLYLINE_PROJECTION}
 
       uniform vec3  uGlowColor, uGlassBaseColor;
-      uniform float uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
+      uniform float uStartDistance, uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
 
       varying vec3 vNormal;
       varying vec3 vViewDir;
@@ -337,7 +339,7 @@ export function createGlowBackMat(glowColor: THREE.Color, segments: TraceSegment
 
         float fragmentDistance    = computeFragmentDistanceOnTrace(vWorldPosition);
         float distanceBehindFront = uFrontDistance - fragmentDistance;
-        float isLit               = step(0.0, distanceBehindFront);
+        float isLit               = step(uStartDistance, fragmentDistance) * step(0.0, distanceBehindFront);
 
         float normalizedDistFromFront = clamp(distanceBehindFront / uFrontHaloLength, 0.0, 1.0);
         float frontPeakIntensity      = isLit * exp(-normalizedDistFromFront * 14.0);
@@ -375,6 +377,7 @@ export function createGlowFilamentMat(glowColor: THREE.Color, segments: TraceSeg
   return new THREE.ShaderMaterial({
     uniforms: {
       uGlowColor:       { value: glowColor.clone() },
+      uStartDistance:   { value: 0.0 },
       uFrontDistance:   { value: 0.0 },
       uFrontHaloLength: { value: 6.0 },
       uGlowIntensity:   { value: 2.5 },
@@ -394,14 +397,14 @@ export function createGlowFilamentMat(glowColor: THREE.Color, segments: TraceSeg
       ${GLSL_POLYLINE_PROJECTION}
 
       uniform vec3  uGlowColor;
-      uniform float uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
+      uniform float uStartDistance, uFrontDistance, uFrontHaloLength, uGlowIntensity, uBrightness;
 
       varying vec3 vWorldPosition;
 
       void main() {
         float fragmentDistance    = computeFragmentDistanceOnTrace(vWorldPosition);
         float distanceBehindFront = uFrontDistance - fragmentDistance;
-        float isLit               = step(0.0, distanceBehindFront);
+        float isLit               = step(uStartDistance, fragmentDistance) * step(0.0, distanceBehindFront);
 
         float normalizedDistFromFront = clamp(distanceBehindFront / uFrontHaloLength, 0.0, 1.0);
         // Pic ultra-blanc très court — concentré au bord d'attaque

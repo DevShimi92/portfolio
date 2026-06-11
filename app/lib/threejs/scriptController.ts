@@ -45,7 +45,7 @@ export function createScriptController(
 
     // Libère les arcs et remet le renderOrder des traces de l'ancien script
     activeArcPools.forEach(pool => {
-      pool.arcs.forEach(arc => scene.remove(arc.line));
+      pool.slots.forEach(arc => scene.remove(arc.line));
     });
     activeAnimatedTraces.forEach(trace => {
       Object.values(trace.glowMeshes).forEach(mesh => { mesh.renderOrder = 0; });

@@ -56,7 +56,19 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   const theta  = 0.490, phi = 0.952, radius = 16.13;
 
   // Point cible (pan translate ce vecteur)
-  const target = new THREE.Vector3(-11.99, 1.37, 2.88);
+  const targetPC = new THREE.Vector3(-11.99, 1.37, 2.88);
+  const targetMobile = new THREE.Vector3(-7.21, 2.03, -0.21);
+  let target = targetPC
+
+  function AdaptedCameraPosition() {
+    const aspect = window.innerWidth / window.innerHeight;
+
+    const profile:string = aspect >= 1.2 ? 'DESKTOP' : aspect >= 0.8 ? 'TABLET' : 'MOBILE-PORTRAIT';
+    if (profile == 'DESKTOP')
+      target = targetPC
+    else
+      target = targetMobile
+  }
 
   function applyCamera() {
       // Position spherique autour de target
@@ -68,6 +80,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
       camera.lookAt(target);
       }
 
+  AdaptedCameraPosition();
   applyCamera();
 
 
@@ -78,6 +91,8 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
       renderer.setSize(window.innerWidth, window.innerHeight)
+      AdaptedCameraPosition();
+      applyCamera();
   }
   window.addEventListener('resize', onResize)
 

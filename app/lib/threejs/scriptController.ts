@@ -43,14 +43,22 @@ export function createScriptController(
       return;
     }
 
-    // Libère les arcs de l'ancien script
+    // Libère les arcs et remet le renderOrder des traces de l'ancien script
     activeArcPools.forEach(pool => {
-      pool.slots.forEach(arc => scene.remove(arc.line));
+      pool.arcs.forEach(arc => scene.remove(arc.line));
+    });
+    activeAnimatedTraces.forEach(trace => {
+      Object.values(trace.glowMeshes).forEach(mesh => { mesh.renderOrder = 0; });
     });
 
     activeAnimatedTraces   = [];
     activeArcPools         = [];
     currentAnimationConfig = resolveAnimationConfig(script);
+
+    // Remet toutes les traces au plan de base avant d'activer le nouveau script
+    animatedTraceMap.forEach(trace => {
+      Object.values(trace.glowMeshes).forEach(mesh => { mesh.renderOrder = 0; });
+    });
 
     resolveActiveTraces(script).forEach(traceDef => {
       const trace = animatedTraceMap.get(traceDef.traceId);
@@ -79,7 +87,11 @@ export function createScriptController(
         mat.uniforms.uFrontDistance.value = traceStartupConfig?.startDistance ?? 0;
       });
 
+      // Trace active au premier plan
+      Object.values(trace.glowMeshes).forEach(mesh => { mesh.renderOrder = 1; });
+
       activeAnimatedTraces.push(trace);
+      Object.values(trace.glowMeshes).forEach(mesh => { mesh.renderOrder = 1; });
       activeArcPools.push(
         initElectricArcPool(new THREE.Color(traceDef.glowColor), scene)
       );

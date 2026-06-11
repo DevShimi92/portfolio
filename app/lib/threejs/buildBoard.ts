@@ -2,8 +2,21 @@ import * as THREE from 'three';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
 import { TraceSegment }  from '@/app/types/traceSegment';
 import { ALL_TRACES }    from './traceRegistry';
-import { createStaticMaterials, createGlowFrontMat, createGlowBackMat, createGlowFilamentMat } from './materialsGlow';
-import { BOARD_HEIGHT, BOARD_SURFACE, TRACE_WIDTH, FILAMENT_Y, toWorldX, toWorldZ } from './boardConstants';
+import {
+  createStaticMaterials,
+  createGlowFrontMat,
+  createGlowBackMat,
+  createGlowFilamentMat,
+} from './materialsGlow';
+import {
+  BOARD_HEIGHT,
+  BOARD_SURFACE,
+  GRID_UNIT,
+  TRACE_WIDTH,
+  FILAMENT_Y,
+  toWorldX,
+  toWorldZ,
+} from './boardConstants';
 
 // ═══════════════════════════════════════════════════════════════
 //  buildBoard
@@ -258,15 +271,17 @@ export function buildBoard(scene: THREE.Scene): Map<string, AnimatedTrace> {
       const filamentCore  = createGlowFilamentMat(glowColor, traceSegments);
 
       // Ajout à la scène
-      root.add(new THREE.Mesh(mergeGeos(backGeos),  innerSurface));
-      root.add(new THREE.Mesh(mergeGeos(filmGeos),  filamentCore));
-      root.add(new THREE.Mesh(mergeGeos(frontGeos), frontSurface));
+      const meshInner    = new THREE.Mesh(mergeGeos(backGeos),  innerSurface);
+      const meshFilament = new THREE.Mesh(mergeGeos(filmGeos),  filamentCore);
+      const meshFront    = new THREE.Mesh(mergeGeos(frontGeos), frontSurface);
+      root.add(meshInner, meshFilament, meshFront);
 
       // Entrée dans la map — prête pour updateAnimatedTrace()
       animatedTraceMap.set(traceId, {
         totalLength:    cumulative,
         traceSegments,
         glowMaterials:  { frontSurface, innerSurface, filamentCore },
+        glowMeshes:     { frontSurface: meshFront, innerSurface: meshInner, filamentCore: meshFilament },
         animationState: {
           distanceTravelled: 0,
           animationPhase:    'fill',

@@ -39,7 +39,7 @@ export default function ThreeJsBackground() {
   if (perfLevel === 'none') {
     return (
       <div style={{
-        position: 'fixed', inset: 0, zIndex: 1,
+        position: 'fixed', inset: 0, zIndex: -1,
         background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)',
         }} />
     )
@@ -51,7 +51,7 @@ export default function ThreeJsBackground() {
         style={{
           position: 'fixed',
           inset: 0,
-          zIndex: 1,
+          zIndex: -1,
           pointerEvents: 'none',
           opacity: 0,
           transition: 'opacity 800ms ease-in-out',

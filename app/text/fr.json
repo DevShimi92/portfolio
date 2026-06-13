@@ -1,5 +1,7 @@
 {
   "HomePage": {
-    "title": "FR DEV TEST"
+    "name": "NOM PRENOM",
+    "role": "Développeur",
+    "disciplines": ["Full-stack", "Sécurité", "Opérationnel\u000A[DevOps]", "Jeux vidéo"]
   }
 }

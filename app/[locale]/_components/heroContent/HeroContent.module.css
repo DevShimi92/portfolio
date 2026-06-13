@@ -1,0 +1,67 @@
+.hero {
+  text-align: left;
+  pointer-events: none;
+  padding: 0 24px;
+  animation: heroFadeIn 1.2s 0.3s var(--ease-out) both;
+}
+
+@keyframes heroFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(0.75rem, 1vw, 1rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  background: linear-gradient(
+    135deg,
+    var(--clr-rim)      0%,
+    var(--clr-primary)  52%,
+    var(--clr-secondary) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 15px;
+}
+
+.role {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: 0.050em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+}
+
+.discipline {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-weight: 400;
+  letter-spacing: 0.050em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.disciplineBlock {
+  min-height: 4.2em;
+}
+
+
+.cursor {
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+  animation: blink 1.1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}

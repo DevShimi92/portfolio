@@ -1,0 +1,7 @@
+{
+  "HomePage": {
+    "name": "LASTNAME FIRSTNAME",
+    "role": "Developer",
+    "disciplines": ["Full-stack", "Security", "Operational", "Video Games"]
+  }
+}

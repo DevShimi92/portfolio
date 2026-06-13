@@ -6,7 +6,7 @@ const ThreeJsBackground = dynamic(
     {
         ssr: false,
         loading: () => <div style={{
-            position: 'fixed', inset: 0, zIndex: 5,
+            position: 'fixed', inset: 0, zIndex: -1,
             background: '#000508'
         }} />
     }

@@ -1,0 +1,122 @@
+.photoWrapper {
+  position: relative;
+  flex-shrink: 0;
+  width: 50%;
+  aspect-ratio: 260 / 320;
+}
+
+.photoWrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.photo {
+  object-fit: cover;
+  object-position: center top;
+  border-radius: var(--r-sm);
+  filter: saturate(0.7) brightness(0.85);
+}
+
+.photoBorder {
+  position: absolute;
+  inset: -6px;
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  pointer-events: none;
+}
+
+.photoBorder rect {
+  fill: none;
+  stroke: var(--clr-primary);
+  stroke-width: 1.5;
+  stroke-dasharray: 1208;
+  stroke-dashoffset: 1208;
+  filter: drop-shadow(0 0 4px rgba(0, 238, 255, 0.7));
+}
+
+.draw .photoBorder rect {
+  animation: drawBorder 1.6s var(--ease-out) forwards;
+}
+
+@keyframes drawBorder {
+  to { stroke-dashoffset: 0; }
+}
+
+.corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+}
+
+.draw .corner {
+  animation: fadeIn 0.4s 1.4s var(--ease-out) forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+.corner::before,
+.corner::after {
+  content: '';
+  position: absolute;
+  background: var(--clr-secondary);
+  box-shadow: 0 0 6px var(--clr-secondary);
+}
+
+.cornerTl { top: -12px; left: -12px; }
+.cornerTl::before { top: 0; left: 0; width: 2px; height: 16px; }
+.cornerTl::after  { top: 0; left: 0; width: 16px; height: 2px; }
+
+.cornerTr { top: -12px; right: -12px; }
+.cornerTr::before { top: 0; right: 0; width: 2px; height: 16px; }
+.cornerTr::after  { top: 0; right: 0; width: 16px; height: 2px; }
+
+.cornerBl { bottom: -12px; left: -12px; }
+.cornerBl::before { bottom: 0; left: 0; width: 2px; height: 16px; }
+.cornerBl::after  { bottom: 0; left: 0; width: 16px; height: 2px; }
+
+.cornerBr { bottom: -12px; right: -12px; }
+.cornerBr::before { bottom: 0; right: 0; width: 2px; height: 16px; }
+.cornerBr::after  { bottom: 0; right: 0; width: 16px; height: 2px; }
+
+.photoTag {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--clr-surface);
+  border: var(--border-glass);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  white-space: nowrap;
+  opacity: 0;
+  box-shadow: var(--glow-sm);
+  cursor: pointer;
+  transition: color var(--t-fast) var(--ease-out),
+  border-color var(--t-fast) var(--ease-out);
+}
+
+.draw .photoTag {
+  animation: fadeIn 0.4s 1.5s var(--ease-out) forwards;
+}
+
+.photoTag:hover {
+  color: var(--clr-secondary);
+  border-color: var(--clr-secondary);
+}
+
+@media (max-width: 768px) {
+  .photoWrapper {
+    width: 85%;
+  }
+}

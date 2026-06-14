@@ -3,5 +3,14 @@
     "name": "LASTNAME FIRSTNAME",
     "role": "Developer",
     "disciplines": ["Full-stack", "Security", "Operational", "Video Games"]
+  },
+  "aboutMePage": {
+    "title":"Title",
+    "bioLines":[
+      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line",
+      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line",
+      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line"
+    ],
+    "highlights": []
   }
 }

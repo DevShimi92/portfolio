@@ -5,9 +5,12 @@ import styles from './PhotoFrame.module.css'
 
 const FALLBACK_IMG = '/images/profile-placeholder.jpg'
 
-type Props = { imgUrl: string }
+type Props = {
+  imgUrl: string
+  cvUrl: string
+}
 
-export default function PhotoFrame({ imgUrl }: Props) {
+export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -50,7 +53,7 @@ export default function PhotoFrame({ imgUrl }: Props) {
       <span className={`${styles.corner} ${styles.cornerBr}`}/>
 
       {/* Label flottant */}
-      <a  href={process.env.PROFILE_IMG_LINK ?? '#'}
+      <a href={cvUrl}
         target="_blank"
         rel="noopener noreferrer"
         className={styles.photoTag}  >Télécharger mon CV</a>

@@ -33,7 +33,7 @@ export default function AboutMe() {
   return (
       <section className={styles.section}>
         <div className={styles.container}>
-          {imgUrl && <PhotoFrame imgUrl={imgUrl} />}
+          {imgUrl && <PhotoFrame imgUrl={imgUrl} cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>}
           <div className={styles.textBlock}>
             <h2 className={styles.title}>{title}</h2>
           <div className={styles.bio}>

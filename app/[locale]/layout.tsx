@@ -1,5 +1,6 @@
 import { Syne, JetBrains_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from "next-intl";
+import ThreeSceneLoader from "@/app/components/background/threeLoader"
 import './globals.css';
 
 
@@ -27,6 +28,7 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
   return (
     <html className={`${syne.variable} ${mono.variable}`}>
       <body>
+        <ThreeSceneLoader />
         <NextIntlClientProvider locale={locale}>
           {children}
         </NextIntlClientProvider>

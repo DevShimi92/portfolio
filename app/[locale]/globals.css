@@ -14,17 +14,47 @@ body {
 }
 
 :root {
-  /* Couleurs — Home */
-  --clr-primary:    #00eeff;
-  --clr-secondary:  #55ffdd;
-  --clr-rim:        #ccf0ff;
-  --clr-text-sub:   rgba(136, 221, 238, 0.55);
+  --clr-primary:      #00eeff;
+  --clr-secondary:    #55ffdd;
+  --clr-rim:          #ccf0ff;
+  --clr-text-sub:     rgba(136, 221, 238, 0.55);
+  --clr-bg:           #000508;
+  --clr-surface:      rgba(4, 12, 20, 0.72);
+  --clr-surface-high: rgba(8, 24, 38, 0.85);
+  --clr-accent:       #88eeff;
+  --clr-muted:        rgba(136, 221, 238, 0.35);
+  --clr-ghost:        rgba(0, 238, 255, 0.08);
+  --clr-text:         rgba(204, 240, 255, 0.92);
+  --clr-text-dim:     rgba(85, 170, 200, 0.35);
+  --clr-rim:          #ccf0ff;
 
-  /* Effets — Home */
+  --border-glass:        1px solid rgba(0, 238, 255, 0.14);
+  --border-glass-bright: 1px solid rgba(0, 238, 255, 0.35);
+  --blur-glass:       blur(14px) saturate(1.4);
+
   --glow-text: 0 0 10px rgba(0, 238, 255, 0.6);
+  --glow-sm:  0 0 8px rgba(0, 238, 255, 0.3);
+  --glow-md:  0 0 18px rgba(0, 238, 255, 0.45);
+  --glow-lg:  0 0 36px rgba(0, 238, 255, 0.25), 0 0 80px rgba(0, 238, 255, 0.1);
 
-  /* Transitions */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-fast: 160ms;
+  --t-med:  280ms;
+  --t-slow: 480ms;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --sp-8: 64px;
+
 }
 
 .section-full {

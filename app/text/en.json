@@ -26,7 +26,7 @@
       "isHobby":     false
     },{
       "title":       "Homelab",
-      "label":       "HomeAssistant #Docker #Personal Network",
+      "label":       "#HomeAssistant #Docker #Personal Network",
       "description":  "Orchestration of docker service in a home network : centralized log, reverse proxy, monitoring and sub-network. Each stack addresses a specific problem, whether for individuals purpose or businesses purpose.",
       "gif":         "/gif/tempoGifGamJam.gif",
       "href":        null,

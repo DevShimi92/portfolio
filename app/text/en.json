@@ -23,5 +23,8 @@
       "hrefLabel":   "See on Itch.io",
       "isHobby":     false
     }]
+  },
+  "footer": {
+    "text": "Crafted by yours truly"
   }
 }

@@ -24,5 +24,8 @@
       "hrefLabel":   "Voir sur Itch.io",
       "isHobby":     false
     }]
+  },
+  "footer": {
+    "text": "Construit par votre serviteur"
   }
 }

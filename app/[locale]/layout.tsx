@@ -3,6 +3,9 @@ import { NextIntlClientProvider } from "next-intl";
 import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import ThreeSceneLoader from "@/app/components/background/threeLoader"
 import ScrollHint from './_components/ScrollHint/ScrollHint';
+import SocialLinks from './_components/socialButton/socialButton';
+import NavBar from './_components/navBar/navbar';
+import LangToggle from './_components/langToggle/langToggle';
 import './globals.css';
 
 
@@ -27,7 +30,10 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
       <body>
         <BackgroundProvider>
           <ThreeSceneLoader />
-             <ScrollHint />
+          <NavBar />
+            <SocialLinks />
+          <ScrollHint />
+          <LangToggle/>
               <NextIntlClientProvider locale={locale}>
                 {children}
               </NextIntlClientProvider>

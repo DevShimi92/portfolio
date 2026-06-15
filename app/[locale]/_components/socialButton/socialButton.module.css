@@ -1,0 +1,66 @@
+/* ── Desktop : colonne verticale, fixed bas gauche ── */
+.socialLinks {
+  position: fixed;
+  bottom: var(--sp-5);
+  left: var(--sp-5);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  animation: socialSlideIn 0.7s 0.15s var(--ease-out) both;
+}
+
+@keyframes socialSlideIn {
+  from { opacity: 0; transform: translateX(-14px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Mobile overlay : ligne horizontale, pas de fixed ── */
+.socialLinksInline {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-3);
+}
+
+/* ── Bouton commun ── */
+.navBtnSocial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--r-md);
+  border: var(--border-glass);
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--clr-text-sub);
+  flex-shrink: 0;
+  transition:
+    color        var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow   var(--t-fast) var(--ease-out),
+    background   var(--t-fast) var(--ease-out);
+}
+
+.navBtnSocial:hover {
+  color: var(--clr-primary);
+  border-color: rgba(0, 238, 255, 0.4);
+  background: var(--clr-ghost);
+  box-shadow: var(--glow-sm);
+}
+
+.navBtnSocial svg {
+  width: 32px;
+  height: 32px;
+  fill: currentColor;
+}
+
+/* ── Masqué sur mobile ── */
+@media (max-width: 768px) {
+  .socialLinks {
+    display: none;
+  }
+}

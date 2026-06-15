@@ -6,6 +6,7 @@
   },
   "aboutMePage": {
     "title":"Hi there",
+    "downloadButton":"Download my CV (in french)",
     "bioLines":[
       "Full Stack Developer with a appetence on security, i design robust and secure applications for your business.",
       "I enjoy working at the intersection of code and software architecture, by making and delivering my clients business needs with some classic/Ai tools and software.",
@@ -14,7 +15,7 @@
     "highlights": []
   },
   "projetsPage":{
-    "title":"Something I did",
+    "title":"Something i do",
     "projects": [{
       "title":       "Game Jam",
       "label":       "#Hackathon #Godot",
@@ -22,6 +23,22 @@
       "gif":         "/gif/tempoGifGamJam.gif",
       "href":        "https://shimi92.itch.io/",
       "hrefLabel":   "See on Itch.io",
+      "isHobby":     false
+    },{
+      "title":       "Homelab",
+      "label":       "HomeAssistant #Docker #Personal Network",
+      "description":  "Orchestration of docker service in a home network : centralized log, reverse proxy, monitoring and sub-network. Each stack addresses a specific problem, whether for individuals purpose or businesses purpose.",
+      "gif":         "/gif/tempoGifGamJam.gif",
+      "href":        null,
+      "hrefLabel":   null,
+      "isHobby":     true
+    },{
+      "title":       "This Portfolio",
+      "label":       null,
+      "description":  "Because we all need a sort of business card. A showcase of what is my profession and my passion at same time.",
+      "gif":         "/gif/tempoGifGamJam.gif",
+      "href":        null,
+      "hrefLabel":   null,
       "isHobby":     false
     }]
   },

@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 import Image from 'next/image'
 import styles from './PhotoFrame.module.css'
 
@@ -11,6 +12,10 @@ type Props = {
 }
 
 export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
+
+  const t = useTranslations('aboutMePage')
+  const downloadTextButton = t.raw('downloadButton') as string
+
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -56,7 +61,7 @@ export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
       <a href={cvUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className={styles.photoTag}  >Télécharger mon CV</a>
+        className={styles.photoTag}  >{ downloadTextButton}</a>
     </div>
   )
 }

@@ -30,7 +30,7 @@ function GifOrPlaceholder({ gif, title }: { gif: string | null; title: string })
 export default function Projets() {
 
   const t = useTranslations('projetsPage')
-  const title = t.raw('title') as strings
+  const title = t.raw('title') as string
   const slides = t.raw('projects') as Project[]
 
   const [currentIndex, setCurrentIndex] = useState(0)

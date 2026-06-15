@@ -30,6 +30,7 @@ function GifOrPlaceholder({ gif, title }: { gif: string | null; title: string })
 export default function Projets() {
 
   const t = useTranslations('projetsPage')
+  const title = t.raw('title') as string
   const slides = t.raw('projects') as Project[]
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -55,7 +56,7 @@ export default function Projets() {
 
         {/* Titre section */}
         <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>Ce que je fais</h2>
+        <h2 className={styles.sectionTitle}>{title}</h2>
         </div>
 
         <div className={styles.slideshow}>

@@ -1,13 +1,15 @@
 import Home from '@/app/[locale]/home/page'
 import AboutMe from '@/app/[locale]/aboutMe/page'
 import Projects from '@/app/[locale]/projets/page'
+import Footer from '@/app/[locale]/_components/footer/page';
 
 export default function Root() {
   return (
       <>
         <section id="home"><Home /></section>
         <section id="about"><AboutMe /></section>
-        <section id="projets"><Projects /></section>
+      <section id="projets"><Projects /></section>
+      <Footer/>
       </>
   );
 }

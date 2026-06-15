@@ -1,0 +1,22 @@
+The humans.txt file explains the team, technology,
+and graphic assets behind this site humanstxt.org.
+
+___________________________________________________
+
+Developer Full-Stack | DevShimi92
+Hand crafted web development coded with love <3
+
+___________________________________________________
+
+TECHNOLOGY
+
+Next.js
+Three.js
+Next-intl
+
+___________________________________________________
+
+FONTS
+
+Syne
+JetBrains_Mono

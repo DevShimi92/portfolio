@@ -6,6 +6,7 @@
   },
   "aboutMePage": {
     "title":"Bonjour",
+    "downloadButton":"Télécharger mon CV",
     "bioLines":[
       "Développeur Full Stack avec une forte appétence vers la sécurité, je conçois des applications robustes et sécurisées pour votre entreprise.",
       "J'aime travailler à l'intersection du code et de l'architecture logiciel, en passant par la réalisation des besoins métiers de mes clients. Au travers de divers outils classique ou assisté par IA.",
@@ -14,6 +15,7 @@
     "highlights": []
   },
   "projetsPage":{
+    "title":"Ce que je fais",
     "projects": [
     {
       "title":       "Game Jam",
@@ -23,6 +25,35 @@
       "href":        "https://shimi92.itch.io/",
       "hrefLabel":   "Voir sur Itch.io",
       "isHobby":     false
+    },{
+      "title":       "Homelab",
+      "label":       "#Domotique #Docker #Réseau privé",
+      "description":  "Orchestration de services docker dans un réseau domestique : gestion centralisée de logs, reverse proxy, monitoring et sous-réseau. Chaque stack répond à un problème concret en tant que particulier ou professionel.",
+      "gif":         "/gif/tempoGifGamJam.gif",
+      "href":        null,
+      "hrefLabel":   null,
+      "isHobby":     true
+    },{
+      "title":       "Ce Portfolio",
+      "label":       null,
+      "description":  "Parce que on a tous besoin d'une sorte de carte de viste. Vitrine de ce qui est à la fois mon métier et ma passion.",
+      "gif":         "/gif/tempoGifGamJam.gif",
+      "href":        null,
+      "hrefLabel":   null,
+      "isHobby":     false
     }]
+  },
+  "footer": {
+    "text": "Construit par votre serviteur"
+  },
+  "errorNotFoundPage":{
+    "title":"Erreur",
+    "text":"Cette page n'existe pas ou a été déplacée.",
+    "button":"Retour à l'accueil"
+  },
+  "serverErrorPage":{
+    "title":"Erreur serveur",
+    "text":"Erreur inattendue côté serveur.",
+    "button":"Retour à l'accueil"
   }
 }

@@ -44,5 +44,15 @@
   },
   "footer": {
     "text": "Crafted by yours truly"
+  },
+  "errorNotFoundPage":{
+    "title":"Error",
+    "text":"This page does not exist or has been moved.",
+    "button":"Back to home"
+  },
+  "serverErrorPage":{
+    "title":"Server error",
+    "text":"Unexpected server-side error.",
+    "button":"Back to home"
   }
 }

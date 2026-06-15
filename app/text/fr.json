@@ -45,5 +45,15 @@
   },
   "footer": {
     "text": "Construit par votre serviteur"
+  },
+  "errorNotFoundPage":{
+    "title":"Erreur",
+    "text":"Cette page n'existe pas ou a été déplacée.",
+    "button":"Retour à l'accueil"
+  },
+  "serverErrorPage":{
+    "title":"Erreur serveur",
+    "text":"Erreur inattendue côté serveur.",
+    "button":"Retour à l'accueil"
   }
 }

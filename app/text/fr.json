@@ -5,12 +5,24 @@
     "disciplines": ["Full-stack", "Sécurité", "Opérationnel\u000A[DevOps]", "Jeux vidéo"]
   },
   "aboutMePage": {
-    "title":"Title",
+    "title":"Bonjour",
     "bioLines":[
-      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line",
-      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line",
-      "Une ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line ligne parfaite pour remplir un peu cette line suivi d'une autre ligne parfaite pour remplir un peu cette line"
+      "Développeur Full Stack avec une forte appétence vers la sécurité, je conçois des applications robustes et sécurisées pour votre entreprise.",
+      "J'aime travailler à l'intersection du code et de l'architecture logiciel, en passant par la réalisation des besoins métiers de mes clients. Au travers de divers outils classique ou assisté par IA.",
+      "Sur mon temps libre et selon mon envie, je me consacre à divers sujet lié à au Dév/DévOps dans un cadre personnel ou co-joint avec des amis. Autrement, j'aime aussi jouer à jeux vidéo (surtout des FGs) ou regarder des animées."
     ],
     "highlights": []
+  },
+  "projetsPage":{
+    "projects": [
+    {
+      "title":       "Game Jam",
+      "label":       "#Hackathon #Godot",
+      "description": "Réalistion de jeuc vidéo thématisé. Conception, développement et livraison sous contrainte de temps. Chaque projet explore un mécanisme et une vision de jeu différente.",
+      "gif":         "/gif/tempoGifGamJam.gif",
+      "href":        "https://shimi92.itch.io/",
+      "hrefLabel":   "Voir sur Itch.io",
+      "isHobby":     false
+    }]
   }
 }

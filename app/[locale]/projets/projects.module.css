@@ -1,0 +1,394 @@
+
+/* ─────────────────────────────────────────────────────────
+   SECTION — centrage vertical dans le viewport
+───────────────────────────────────────────────────────── */
+.section {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--sp-6);
+}
+
+/* ─────────────────────────────────────────────────────────
+   TITRE SECTION — au dessus du slideshow
+───────────────────────────────────────────────────────── */
+.sectionHeader {
+  position: absolute;
+  top: var(--sp-6);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.sectionLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, var(--clr-rim) 0%, var(--clr-primary) 60%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─────────────────────────────────────────────────────────
+   SLIDESHOW — conteneur principal
+───────────────────────────────────────────────────────── */
+.slideshow {
+  position: relative;
+  width: 90vw;
+  height: 82vh;
+}
+
+/* ─────────────────────────────────────────────────────────
+   GIF BLOC — couvre tout le slideshow
+───────────────────────────────────────────────────────── */
+.gifBlock {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  border: var(--border-glass);
+  box-shadow: var(--glow-sm), 0 8px 40px rgba(0,0,0,0.5);
+  transition: opacity var(--t-slow) var(--ease-out);
+  opacity: 1;
+}
+
+.gifBlock.isHidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* GIF réel */
+.gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ─────────────────────────────────────────────────────────
+   PLACEHOLDER — affiché si gif est null
+───────────────────────────────────────────────────────── */
+.gifPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(0,20,40,0.95) 0%, rgba(0,40,60,0.9) 100%);
+}
+
+.gifPlaceholderLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--clr-text-sub);
+  text-transform: uppercase;
+}
+
+/* ─────────────────────────────────────────────────────────
+   BADGE HOBBY — haut gauche du gif
+───────────────────────────────────────────────────────── */
+.hobbyBadge {
+  position: absolute;
+  top: var(--sp-4);
+  left: var(--sp-4);
+  z-index: 10;
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-sm);
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+  box-shadow: var(--glow-sm);
+  opacity: 0;
+  transform: translateY(-6px);
+  transition:
+    opacity   var(--t-med) var(--ease-out),
+    transform var(--t-med) var(--ease-out);
+  pointer-events: none;
+}
+
+.hobbyBadge.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ─────────────────────────────────────────────────────────
+   BLOC INFO — déposé par-dessus le gif en bas à droite
+───────────────────────────────────────────────────────── */
+.slideInfo {
+  position: absolute;
+  bottom: var(--sp-6);
+  right: var(--sp-6);
+  z-index: 10;
+  width: 36%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5) var(--sp-6);
+  box-shadow: var(--glow-sm);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity      var(--t-med) var(--ease-out),
+    transform    var(--t-med) var(--ease-out),
+    box-shadow   var(--t-med) var(--ease-out),
+    border-color var(--t-med) var(--ease-out);
+}
+
+.slideInfo.isVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slideInfo:hover {
+  box-shadow: var(--glow-md);
+  border-color: rgba(0, 238, 255, 0.3);
+}
+
+.slideInfoLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+}
+
+.slideTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--clr-rim) 0%, var(--clr-primary) 52%, var(--clr-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slideDescription {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--clr-text-sub);
+}
+
+/* ─────────────────────────────────────────────────────────
+   LIEN OPTIONNEL
+───────────────────────────────────────────────────────── */
+.slideLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  text-decoration: none;
+  text-shadow: var(--glow-text);
+  border-bottom: 1px solid rgba(0, 238, 255, 0.3);
+  padding-bottom: 2px;
+  align-self: flex-start;
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    text-shadow  var(--t-fast) var(--ease-out);
+}
+
+.slideLink:hover {
+  border-color: var(--clr-primary);
+  text-shadow: var(--glow-md);
+}
+
+.slideLink:hover .arrow { transform: translateX(4px); }
+
+.arrow {
+  display: inline-block;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+/* ─────────────────────────────────────────────────────────
+   FLÈCHES DE NAVIGATION
+───────────────────────────────────────────────────────── */
+.navArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-md);
+  padding: var(--sp-4) var(--sp-3);
+  cursor: pointer;
+  color: var(--clr-text-sub);
+  box-shadow: var(--glow-sm);
+  appearance: none;
+  outline: none;
+  transition:
+    color        var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow   var(--t-fast) var(--ease-out),
+    transform    var(--t-fast) var(--ease-out);
+}
+
+/* Flèches légèrement en dehors du slideshow */
+.navArrowPrev { left: calc(-1 * var(--sp-7)); }
+.navArrowNext { right: calc(-1 * var(--sp-7)); }
+
+.navArrow:hover {
+  color: var(--clr-primary);
+  border-color: rgba(0, 238, 255, 0.35);
+  box-shadow: var(--glow-md);
+}
+
+.navArrowPrev:hover { transform: translateY(-50%) translateX(-2px); }
+.navArrowNext:hover { transform: translateY(-50%) translateX(2px); }
+
+.navArrow svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: square;
+  stroke-linejoin: miter;
+}
+
+/* ─────────────────────────────────────────────────────────
+   WRAPPER TIROIR — desktop : inactif / mobile : actif
+───────────────────────────────────────────────────────── */
+.descWrapper {
+  position: relative;
+}
+
+/* Fade gradient */
+.descFade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2em;
+  background: linear-gradient(to bottom, transparent, transparent);
+  pointer-events: none;
+  transition: opacity var(--t-fast) var(--ease-out);
+}
+
+.descFadeHidden {
+  opacity: 0;
+}
+
+/* ─────────────────────────────────────────────────────────
+   MOBILE
+───────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+
+  .section {
+    padding: var(--sp-4);
+  }
+
+  /* Slideshow plein écran */
+  .slideshow {
+    width: 100vw;
+    height: 85vh;
+    margin: 0 calc(-1 * var(--sp-4));
+  }
+
+  /* Gif couvre tout — pas de border-radius sur les côtés */
+  .gifBlock {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  /* Bloc info — overlay pleine largeur en bas */
+  .slideInfo {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    border-bottom: none;
+    padding: var(--sp-4) var(--sp-5);
+    gap: var(--sp-3);
+    cursor: pointer;
+    /* Réinitialise le transform desktop */
+    transform: translateY(0);
+  }
+
+  .slideInfo.isVisible {
+    transform: translateY(0);
+  }
+
+  /* Tiroir — description tronquée par défaut */
+  .descWrapper {
+    overflow: hidden;
+    max-height: calc(1.75em * 3); /* 3 lignes */
+    transition: max-height var(--t-slow) var(--ease-out);
+  }
+
+  .descWrapper.descExpanded {
+    max-height: 300px;
+  }
+
+  /* Fade gradient vers transparent */
+  .descFade {
+    background: linear-gradient(to bottom, transparent, rgba(4, 12, 20, 0.72));
+  }
+
+  /* Flèches — repositionnées à l'intérieur, en bas au-dessus du bloc info */
+  .navArrow {
+    top: auto;
+    bottom: calc(var(--sp-8) + 160px); /* au-dessus du bloc info fermé */
+    transform: none;
+    padding: var(--sp-3) var(--sp-3);
+  }
+
+  .navArrowPrev {
+    left: var(--sp-4);
+  }
+
+  .navArrowNext {
+    right: var(--sp-4);
+  }
+
+  .navArrowPrev:hover { transform: translateX(-2px); }
+  .navArrowNext:hover { transform: translateX(2px);  }
+}

@@ -9,8 +9,8 @@
     "downloadButton":"Télécharger mon CV",
     "bioLines":[
       "Développeur Full Stack avec une forte appétence vers la sécurité, je conçois des applications robustes et sécurisées pour votre entreprise.",
-      "J'aime travailler à l'intersection du code et de l'architecture logiciel, en passant par la réalisation des besoins métiers de mes clients. Au travers de divers outils classique ou assisté par IA.",
-      "Sur mon temps libre et selon mon envie, je me consacre à divers sujet lié à au Dév/DévOps dans un cadre personnel ou co-joint avec des amis. Autrement, j'aime aussi jouer à jeux vidéo (surtout des FGs) ou regarder des animées."
+      "J'aime travailler à l'intersection du code et de l'architecture logiciel, en passant par la réalisation des besoins métiers de mes clients avec divers outils classique ou assisté par IA.",
+      "Sur mon temps libre et selon mon envie, je me consacre à divers sujets liés aux Dév/DévOps dans un cadre personnel ou co-joint avec des amis. Autrement, j'aime aussi jouer à des jeux vidéos (surtout des FGs) ou regarder des animées."
     ],
     "highlights": []
   },
@@ -20,7 +20,7 @@
     {
       "title":       "Game Jam",
       "label":       "#Hackathon #Godot",
-      "description": "Réalistion de jeuc vidéo thématisé. Conception, développement et livraison sous contrainte de temps. Chaque projet explore un mécanisme et une vision de jeu différente.",
+      "description": "Réalistion de jeux vidéo thématisé. Conception, développement et livraison sous contrainte de temps. Chaque projet explore un mécanisme et une vision de jeu différente.",
       "gif":         "/gif/tempoGifGamJam.gif",
       "href":        "https://shimi92.itch.io/",
       "hrefLabel":   "Voir sur Itch.io",
@@ -28,7 +28,7 @@
     },{
       "title":       "Homelab",
       "label":       "#Domotique #Docker #Réseau privé",
-      "description":  "Orchestration de services docker dans un réseau domestique : gestion centralisée de logs, reverse proxy, monitoring et sous-réseau. Chaque stack répond à un problème concret en tant que particulier ou professionel.",
+      "description":  "Orchestration de services docker dans un réseau domestique : gestion centralisée de logs, reverse proxy, monitoring et réseau. Chaque stack répond à un problème concret en tant que particulier ou professionel.",
       "gif":         "/gif/tempoGifGamJam.gif",
       "href":        null,
       "hrefLabel":   null,
@@ -36,7 +36,7 @@
     },{
       "title":       "Ce Portfolio",
       "label":       null,
-      "description":  "Parce que on a tous besoin d'une sorte de carte de viste. Vitrine de ce qui est à la fois mon métier et ma passion.",
+      "description":  "Parce qu'on a tous besoin d'une sorte de carte de viste. Vitrine de ce qui est à la fois mon métier et ma passion.",
       "gif":         "/gif/tempoGifGamJam.gif",
       "href":        null,
       "hrefLabel":   null,

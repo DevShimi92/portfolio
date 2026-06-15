@@ -5,9 +5,6 @@ import styles from './aboutMe.module.css'
 
 type Highlight = { word: string; href: string }
 
-const imgUrl = process.env.PROFILE_IMG_URL
-
-
 function parseLineWithHighlights(line: string, highlights: Highlight[]) {
   if (!highlights.length) return <span>{line}</span>
 
@@ -31,9 +28,9 @@ export default function AboutMe() {
   const bioLines   = t.raw('bioLines')   as string[]
   const highlights = t.raw('highlights') as Highlight[]
   return (
-      <section className={styles.section}>
+    <section className={styles.section}>
         <div className={styles.container}>
-          {imgUrl && <PhotoFrame imgUrl={imgUrl} cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>}
+          <PhotoFrame imgUrl="/api/profile-img" cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>
           <div className={styles.textBlock}>
             <h2 className={styles.title}>{title}</h2>
           <div className={styles.bio}>

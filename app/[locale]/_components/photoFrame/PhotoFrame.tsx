@@ -34,7 +34,7 @@ export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
   return (
     <div ref={wrapperRef} className={styles.photoWrapper} onContextMenu={(e) => e.preventDefault()}>
       <Image src={imgUrl ?? FALLBACK_IMG}
-        alt="Photo de profil"
+        alt="Picture profile"
         fill
         sizes="(max-width: 768px) 85vw, 30vw"
         className={styles.photo}

@@ -1,3 +1,4 @@
+import { head } from '@vercel/blob'
 import { useTranslations } from 'next-intl'
 import Link from 'next/link'
 import PhotoFrame from '../_components/photoFrame/PhotoFrame'
@@ -5,7 +6,9 @@ import styles from './aboutMe.module.css'
 
 type Highlight = { word: string; href: string }
 
-const imgUrl = process.env.PROFILE_IMG_URL
+const blob = await head(process.env.PROFILE_IMG_URL ?? '', {
+  token: process.env.BLOB_READ_WRITE_TOKEN
+})
 
 
 function parseLineWithHighlights(line: string, highlights: Highlight[]) {
@@ -33,7 +36,7 @@ export default function AboutMe() {
   return (
       <section className={styles.section}>
         <div className={styles.container}>
-          {imgUrl && <PhotoFrame imgUrl={imgUrl} cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>}
+          {blob && <PhotoFrame imgUrl={blob.url} cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>}
           <div className={styles.textBlock}>
             <h2 className={styles.title}>{title}</h2>
           <div className={styles.bio}>

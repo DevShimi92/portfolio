@@ -1,7 +1,8 @@
 import { Syne, JetBrains_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from "next-intl";
-import ThreeSceneLoader from "@/app/components/background/threeLoader"
 import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
+import ThreeSceneLoader from "@/app/components/background/threeLoader"
+import ScrollHint from './_components/ScrollHint/ScrollHint';
 import './globals.css';
 
 
@@ -26,11 +27,12 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
       <body>
         <BackgroundProvider>
           <ThreeSceneLoader />
-            <NextIntlClientProvider locale={locale}>
-              {children}
-            </NextIntlClientProvider>
+             <ScrollHint />
+              <NextIntlClientProvider locale={locale}>
+                {children}
+              </NextIntlClientProvider>
           </BackgroundProvider>
         </body>
     </html>
-  );
+  )
 }

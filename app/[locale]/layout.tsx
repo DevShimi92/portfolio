@@ -1,6 +1,7 @@
 import { Syne, JetBrains_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from "next-intl";
 import ThreeSceneLoader from "@/app/components/background/threeLoader"
+import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import './globals.css';
 
 
@@ -16,11 +17,6 @@ const mono = JetBrains_Mono({
   weight: ['300','400','500','700'],
 });
 
-type Props = {
-  children: React.ReactNode;
-  params: Promise<{locale: string}>;
-};
-
 export default async function RootLayout({ children, params }: LayoutProps<'/[locale]'>) {
 
   const { locale } = await params;
@@ -28,10 +24,12 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
   return (
     <html className={`${syne.variable} ${mono.variable}`}>
       <body>
-        <ThreeSceneLoader />
-        <NextIntlClientProvider locale={locale}>
-          {children}
-        </NextIntlClientProvider>
+        <BackgroundProvider>
+          <ThreeSceneLoader />
+            <NextIntlClientProvider locale={locale}>
+              {children}
+            </NextIntlClientProvider>
+          </BackgroundProvider>
         </body>
     </html>
   );

@@ -3,11 +3,15 @@ import { NextIntlClientProvider } from "next-intl";
 import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import ThreeSceneLoader from "@/app/components/background/threeLoader"
 import ScrollHint from './_components/ScrollHint/ScrollHint';
-import SocialLinks from './_components/socialButton/socialButton';
 import NavBar from './_components/navBar/navbar';
-import LangToggle from './_components/langToggle/langToggle';
+import ThemeProvider from '@/app/[locale]/_components/themeProvider/ThemeProvider'
 import './globals.css';
 
+export const metadata = {
+  icons: {
+    icon: '/favicon.svg',
+  }
+}
 
 const syne = Syne({
   subsets: ['latin'],
@@ -26,18 +30,18 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
   const { locale } = await params;
 
   return (
-    <html className={`${syne.variable} ${mono.variable}`}>
+    <html className={`${syne.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
+        <ThemeProvider>
         <BackgroundProvider>
           <ThreeSceneLoader />
           <NavBar />
-            <SocialLinks />
-          <ScrollHint />
-          <LangToggle/>
+            <ScrollHint />
               <NextIntlClientProvider locale={locale}>
                 {children}
               </NextIntlClientProvider>
           </BackgroundProvider>
+        </ThemeProvider>
         </body>
     </html>
   )

@@ -4,9 +4,11 @@ import navStyles from './navbar.module.css'
 import hamStyles from './hamburger.module.css'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import SocialLinks, { SocialLinksInline } from '@/app/[locale]/_components/socialButton/socialButton'
+import ThemeToggle, { ThemeToggleInline } from '../themeToggle/themeToggle'
+import LangToggle, { LangToggleInline } from '../langToggle/langToggle'
 
 const LINKS = [
-  { href: 'home', label: 'Home' },
+  { href: 'home',    label: 'Home' },
   { href: 'about',   label: 'Info' },
   { href: 'projets', label: 'Projets' },
 ]
@@ -28,9 +30,7 @@ export default function NavBar() {
     <>
       {/* ── Desktop : navbar verticale gauche + sociaux fixed ── */}
       <nav
-        className={`${navStyles.navbar} ${isPinned ? navStyles.navbarPinned : navStyles.navbarHidden}`}
-        role="navigation"
-        aria-label="Navigation principale">
+        className={`${navStyles.navbar} ${isPinned ? navStyles.navbarPinned : navStyles.navbarHidden}`} role="navigation" aria-label="Navigation principale">
         {LINKS.map(({ href, label }) => (
           <button
             key={href}
@@ -41,6 +41,8 @@ export default function NavBar() {
         ))}
       </nav>
       <SocialLinks />
+      <ThemeToggle />
+      <LangToggle />
 
       {/* ── Mobile : bouton hamburger ── */}
       <button
@@ -75,6 +77,8 @@ export default function NavBar() {
             <SocialLinksInline />
           </div>
           <div className={hamStyles.overlayBottomRight}>
+            <ThemeToggleInline />
+            <LangToggleInline />
           </div>
         </div>
       </div>

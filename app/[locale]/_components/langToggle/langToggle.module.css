@@ -44,3 +44,62 @@
     display: none;
   }
 }
+
+/* ── Variante inline pour l'overlay mobile ── */
+.toggleInline {
+  position: static;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 51.5px;
+
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-md);
+  box-shadow: var(--glow-sm);
+  cursor: pointer;
+
+  color: var(--clr-text-sub);
+  transition:
+    color        var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow   var(--t-fast) var(--ease-out);
+}
+
+.toggleInline:hover {
+  color: var(--clr-primary);
+  border-color: rgba(0, 238, 255, 0.35);
+  box-shadow: var(--glow-md);
+}
+
+/* ── Variante inline — overlay mobile, sans position fixed ── */
+.toggleInline {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 51.5px;
+
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-md);
+  box-shadow: var(--glow-sm);
+  cursor: pointer;
+  color: var(--clr-text-sub);
+
+  transition:
+    color        var(--t-fast) var(--ease-out),
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow   var(--t-fast) var(--ease-out);
+}
+
+.toggleInline:hover {
+  color: var(--clr-primary);
+  border-color: rgba(0, 238, 255, 0.35);
+  box-shadow: var(--glow-md);
+}

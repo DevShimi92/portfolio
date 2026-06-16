@@ -1,15 +1,16 @@
 import Home from '@/app/[locale]/home/page'
 import AboutMe from '@/app/[locale]/aboutMe/page'
 import Projects from '@/app/[locale]/projets/page'
-import Footer from '@/app/[locale]/_components/footer/page';
+import Footer from '@/app/[locale]/_components/footer/footer';
+import AnimatedSection from '@/app/[locale]/_components/AnimatedSection/AnimatedSection'
 
 export default function Root() {
   return (
       <>
-        <section id="home"><Home /></section>
-        <section id="about"><AboutMe /></section>
-      <section id="projets"><Projects /></section>
-      <Footer/>
+        <AnimatedSection id="home" isHome ><Home /></AnimatedSection>
+        <AnimatedSection id="about"><AboutMe /></AnimatedSection>
+        <AnimatedSection id="projets"><Projects /></AnimatedSection>
+        <Footer/>
       </>
   );
 }

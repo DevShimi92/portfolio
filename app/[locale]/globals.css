@@ -9,8 +9,8 @@ html {
 }
 
 body {
-  background: #000508;
-  color: rgba(204, 240, 255, 0.92);
+    background: var(--clr-bg);
+    color: var(--clr-text);
 }
 
 :root {
@@ -66,6 +66,23 @@ body {
   z-index: 10;
 }
 
+/* ── Thème jour ── */
+.light {
+  --clr-bg:           #e8f4f8;
+  --clr-surface:      rgba(220, 238, 248, 0.8);
+  --clr-surface-high: rgba(200, 225, 240, 0.92);
+  --clr-primary:      #0077aa;
+  --clr-secondary:    #009988;
+  --clr-ghost:        rgba(0, 119, 170, 0.07);
+  --clr-muted:        rgba(0, 100, 150, 0.25);
+  --clr-text:         #0a1a24;
+  --clr-text-sub:     rgba(0, 80, 120, 0.65);
+  --clr-text-dim:     rgba(0, 80, 120, 0.35);
+  --border-glass:     1px solid rgba(0, 119, 170, 0.18);
+  --glow-sm:          0 0 8px rgba(0, 119, 170, 0.2);
+  --glow-md:          0 0 18px rgba(0, 119, 170, 0.28);
+  --glow-text:        none;
+}
 
 /* ── ERROR PAGES ── */
 .error-page {
@@ -175,6 +192,8 @@ body {
   stroke-linejoin: round;
   flex-shrink: 0;
 }
+
+
 
 @media (max-width: 480px) {
   .error-msg { letter-spacing: 0.1em; }

@@ -1,0 +1,157 @@
+/* ═══════════════════════════════════════════════════════
+   HAMBURGER — bouton toggle, haut droite (mobile)
+═══════════════════════════════════════════════════════ */
+.hamburger {
+  display: none;
+  position: fixed;
+  top: var(--sp-5);
+  right: var(--sp-5);
+  z-index: 200;
+
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: var(--sp-2);
+
+  background: var(--clr-surface);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  border: var(--border-glass);
+  border-radius: var(--r-md);
+  box-shadow: var(--glow-sm);
+  cursor: pointer;
+
+  transition:
+    border-color var(--t-fast) var(--ease-out),
+    box-shadow   var(--t-fast) var(--ease-out);
+}
+
+.hamburger:hover {
+  border-color: rgba(0, 238, 255, 0.35);
+  box-shadow: var(--glow-md);
+}
+
+.hamburgerLine {
+  display: block;
+  width: 16px;
+  height: 1.5px;
+  background: var(--clr-text-sub);
+  border-radius: 999px;
+  transform-origin: center;
+  transition:
+    transform  var(--t-med) var(--ease-out),
+    opacity    var(--t-med) var(--ease-out),
+    background var(--t-fast) var(--ease-out);
+}
+
+.hamburger:hover .hamburgerLine {
+  background: var(--clr-primary);
+}
+
+.hamburgerLineTop {
+  transform: translateY(6.5px) rotate(45deg);
+  background: var(--clr-primary);
+}
+.hamburgerLineMid {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburgerLineBot {
+  transform: translateY(-6.5px) rotate(-45deg);
+  background: var(--clr-primary);
+}
+
+/* ═══════════════════════════════════════════════════════
+   OVERLAY — menu plein écran, tiroir haut → bas
+═══════════════════════════════════════════════════════ */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+
+  background: rgba(0, 5, 8, 0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path var(--t-slow) var(--ease-out);
+}
+
+.overlayOpen {
+  clip-path: inset(0 0 0% 0);
+}
+
+.overlayNav {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-5);
+  height: 100%;
+}
+
+.overlayBtn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--clr-text-sub);
+
+  transition:
+    color       var(--t-fast) var(--ease-out),
+    text-shadow var(--t-fast) var(--ease-out);
+}
+
+.overlayBtn:hover {
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+}
+
+.overlayBtnActive {
+  color: var(--clr-primary);
+  text-shadow: var(--glow-text);
+}
+
+/* ─── Barre du bas : sociaux gauche, thème+langue droite ─── */
+.overlayBottom {
+  position: absolute;
+  bottom: var(--sp-7);
+  left: var(--sp-5);
+  right: var(--sp-5);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.overlayBottomLeft {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-3);
+}
+
+.overlayBottomRight {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-3);
+}
+
+/* ── Visible sur mobile uniquement ── */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .overlay {
+    display: block;
+  }
+}

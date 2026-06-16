@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useEffect } from 'react';
 import { initThreeSceneBackground } from '@/app/lib/threejs';
-
+import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 
 // Selon le terminal, on réduit voir on déactive le background
 function getMobilePerf(): 'full' | 'reduced' | 'none' {
@@ -18,10 +18,12 @@ function getMobilePerf(): 'full' | 'reduced' | 'none' {
   return 'full';
 }
 
+const MAX_BLUR = 7 // px
+
 export default function ThreeJsBackground() {
 
   const mountRef = useRef<HTMLDivElement>(null);
-
+  const { blurAmount } = useBackground()
   const perfLevel = getMobilePerf();
 
   useEffect(() => {
@@ -55,6 +57,8 @@ export default function ThreeJsBackground() {
           pointerEvents: 'none',
           opacity: 0,
           transition: 'opacity 800ms ease-in-out',
+          willChange: 'filter',
+          filter: `blur(${(blurAmount * MAX_BLUR).toFixed(2)}px)`,
         }}
       />
     )

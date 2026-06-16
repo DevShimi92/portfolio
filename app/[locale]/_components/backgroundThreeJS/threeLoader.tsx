@@ -2,7 +2,7 @@
 import dynamic from 'next/dynamic'
 
 const ThreeJsBackground = dynamic(
-    () => import('@/app/components/background/threeJsBackground'),
+    () => import('@/app/[locale]/_components/backgroundThreeJS/threeJsBackground'),
     {
         ssr: false,
         loading: () => <div style={{

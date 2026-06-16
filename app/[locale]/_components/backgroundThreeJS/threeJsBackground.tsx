@@ -2,6 +2,7 @@
 import { useRef, useEffect } from 'react';
 import { initThreeSceneBackground } from '@/app/lib/threejs';
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
+import { isScrollEnabled } from '@/app/lib/threejs/cameraProfile'
 
 // Selon le terminal, on réduit voir on déactive le background
 function getMobilePerf(): 'full' | 'reduced' | 'none' {
@@ -24,12 +25,43 @@ export default function ThreeJsBackground() {
 
   const mountRef = useRef<HTMLDivElement>(null);
   const { blurAmount } = useBackground()
-  const perfLevel = getMobilePerf();
+  const setCameraScrollRef = useRef<((p: number) => void) | null>(null)
+  const perfLevel = getMobilePerf()
+  const scrollActiveRef = useRef(isScrollEnabled())
+
+
 
   useEffect(() => {
     if (!mountRef.current) return;
     if (perfLevel == 'none')return;
-    const { cleanup } = initThreeSceneBackground(mountRef.current, perfLevel);
+    const { cleanup, setCameraScroll } = initThreeSceneBackground(mountRef.current, perfLevel);
+    setCameraScrollRef.current = setCameraScroll
+
+    let rafId: number
+
+    const onScroll = () => {
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(() => {
+        const maxScroll = document.body.scrollHeight - window.innerHeight
+        if (maxScroll <= 0) return
+        const progress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1)
+          setCameraScrollRef.current?.(progress)
+      })
+    }
+
+    if (scrollActiveRef.current) {
+      window.addEventListener('scroll', onScroll, { passive: true })
+    }
+
+    window.addEventListener('resize', () => {
+      const shouldBeActive = isScrollEnabled()
+      if (shouldBeActive && !scrollActiveRef.current) {
+        window.addEventListener('scroll', onScroll, { passive: true })
+      } else if (!shouldBeActive && scrollActiveRef.current) {
+        window.removeEventListener('scroll', onScroll)
+      }
+      scrollActiveRef.current = shouldBeActive
+    })
 
     requestAnimationFrame(() => {
             if (mountRef.current) mountRef.current.style.opacity = '1'

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { getCameraProfile } from '@/app/lib/threejs/cameraProfile'
 
 export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (deltaTime: number) => void) {
 
@@ -61,13 +62,8 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   let target = targetPC
 
   function AdaptedCameraPosition() {
-    const aspect = window.innerWidth / window.innerHeight;
-
-    const profile:string = aspect >= 1.2 ? 'DESKTOP' : aspect >= 0.8 ? 'TABLET' : 'MOBILE-PORTRAIT';
-    if (profile == 'DESKTOP')
-      target = targetPC
-    else
-      target = targetMobile
+    const profile = getCameraProfile()
+    target = profile === 'MOBILE-PORTRAIT' ? targetMobile : targetPC
   }
 
   function applyCamera() {
@@ -119,6 +115,6 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   mount.appendChild(renderer.domElement);
 
   return {
-    renderer, scene, camera,
+    renderer, scene, camera, target, applyCamera,
     cleanEventResize: () => window.removeEventListener('resize', onResize)};
 }

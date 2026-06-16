@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Renderer } from './renderer';
 import { buildBoard } from './buildBoard';
+import { setCameraScroll } from './scrollCamera';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
 import { updateAnimatedTrace } from './animatedTrace';
 import { initElectricArcPool, updateElectricArcs, ElectricArcPool } from './electricArcs';
@@ -10,7 +11,7 @@ import { TRACE_SCRIPTS, DEFAULT_SCRIPT, resolveActiveTraces, resolveAnimationCon
 
 export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {
 
-  const { renderer, scene, camera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
+  const { renderer, scene, camera, target, applyCamera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
 
   // buildBoard construit toute la scène et retourne les traces animables
   const animatedTraceMap = buildBoard(scene);
@@ -47,6 +48,7 @@ export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: strin
   return {
     renderer, camera,
     activateScript: scriptController.activateScript,
+    setCameraScroll: (scrollProgress: number) => setCameraScroll(scrollProgress, target, applyCamera),
     cleanup: () => {
       renderer.setAnimationLoop(null);        // stoppe la boucle
       cleanEventResize();                     // retire le listener resize

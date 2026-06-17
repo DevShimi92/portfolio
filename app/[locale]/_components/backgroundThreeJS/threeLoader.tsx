@@ -7,7 +7,7 @@ const ThreeJsBackground = dynamic(
         ssr: false,
         loading: () => <div style={{
             position: 'fixed', inset: 0, zIndex: -1,
-            background: '#000508'
+            background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)'
         }} />
     }
 )

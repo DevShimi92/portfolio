@@ -11,23 +11,18 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
   'default0': {
     scriptId: 'default0',
     activeTraceIds: ['trace-A7'],
-    animationConfig: {
-      travelSpeed: 40,
-    },
+    glowColor: 0x5203FC,
+
   },
   'default1': {
     scriptId: 'default1',
     activeTraceIds: ['trace-A6'],
-    animationConfig: {
-      travelSpeed: 40,
-    },
+    glowColor: 0x5203FC,
   },
   'default2': {
     scriptId: 'default2',
     activeTraceIds: ['trace-A8'],
-    animationConfig: {
-      travelSpeed: 40,
-    },
+    glowColor: 0x5203FC,
   },
   'trace-on-1': {
     scriptId: 'trace-on-1',

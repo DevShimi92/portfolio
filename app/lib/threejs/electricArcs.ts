@@ -149,13 +149,14 @@ export function updateElectricArcs(
   pool:          ElectricArcPool,
   traceSegments: TraceSegment[],
   frontDistance: number,
+  startDistance: number,
   brightness:    number,
   deltaTime:     number,
   config:        TraceAnimationConfig
 ): void {
 
-  // Aucun arc si la trace n'est pas encore allumée
-  if (frontDistance <= 0 || brightness <= 0) {
+  // Aucun arc tant que le front n'a pas dépassé le point de départ
+  if (frontDistance <= startDistance || brightness <= 0) {
     pool.slots.forEach(slot => {
       if (slot.isActive) deactivateSlot(slot);
     });
@@ -190,7 +191,7 @@ export function updateElectricArcs(
     const slot = pool.slots[slotIndex];
     if (slot.isActive) continue; // slot occupé
 
-    spawnArc(slot, pool.glowColor, traceSegments, frontDistance, arcLifespan, config);
+    spawnArc(slot, pool.glowColor, traceSegments, frontDistance, startDistance, arcLifespan, config);
     spawned++;
   }
 }
@@ -208,12 +209,16 @@ function spawnArc(
   glowColor:     THREE.Color,
   segments:      TraceSegment[],
   frontDistance: number,
+  startDistance: number,
   baseLifespan:  number,
   config:        TraceAnimationConfig
 ): void {
 
-  // ── Point de départ aléatoire dans la zone parcourue ─────────
-  const spawnDistance = Math.random() * frontDistance;
+  // ── Point de départ aléatoire dans la zone ALLUMÉE ───────────
+  // Bornée à [startDistance, frontDistance] : la portion sautée
+  // par startDistance ne reçoit pas d'arcs.
+  const litSpan       = Math.max(0, frontDistance - startDistance);
+  const spawnDistance = startDistance + Math.random() * litSpan;
   const spawnPosition = interpolatePositionOnTrace(segments, spawnDistance);
 
   // ── Direction perpendiculaire à la trace au point de départ ──

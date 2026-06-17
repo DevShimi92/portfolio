@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
 import { TraceSegment }  from '@/app/types/traceSegment';
-import { ALL_TRACES }    from './traceRegistry';
+import { ALL_TRACES, BOARD_TRACES } from './traceRegistry';
 import {
   createStaticMaterials,
   createGlowFrontMat,
@@ -11,8 +11,6 @@ import {
 import {
   BOARD_HEIGHT,
   BOARD_SURFACE,
-  GRID_UNIT,
-  TRACE_WIDTH,
   FILAMENT_Y,
   toWorldX,
   toWorldZ,
@@ -287,7 +285,9 @@ export function buildBoard(scene: THREE.Scene): Map<string, AnimatedTrace> {
           animationPhase:    'fill',
           phaseElapsedTime:  0,
           startupDelay:      0,
+          startDistance:     0,
           hasStarted:        false,
+          cycleComplete:     false,
         },
       });
 
@@ -300,21 +300,15 @@ export function buildBoard(scene: THREE.Scene): Map<string, AnimatedTrace> {
 
   // ═══════════════════════════════════════════════════════════════
   //  TRACÉ DES TRACES PCB
-  //  Syntaxe : traceTubes([[col, rang], ...], largeur, 'traceId'?)
-  //  Le traceId est optionnel — absent = trace décorative
+  //
+  //  Itère la source unique BOARD_TRACES (traceRegistry.ts).
+  //  Une trace animable est construite avec son traceId (géométrie
+  //  + glow dédiés) ; une trace décorative est passée sans id et
+  //  fusionnée dans le décor statique (split perf inchangé).
   // ═══════════════════════════════════════════════════════════════
-  traceTubes([[-5.65,2.35],[-5.65,3.35],[-5.5,3.5],[-5.5,10]], TRACE_WIDTH);
-  traceTubes([[-5.75,1.25],[-5.75,2.25],[-5,3],[-5,10]], TRACE_WIDTH);
-  traceTubes([[-6,-4],[-6,1],[-4.5,2.5],[-4.5,10]], TRACE_WIDTH);
-  traceTubes([[-5,-11.5],[-7,-9.5],[-7,-5],[-6.5,-4.5]], TRACE_WIDTH);
-  traceTubes([[-5,-20],[-5,-10.5],[-6.5,-9],[-6.5,-4.5],[-6,-4],[-6,-0],[-4,2],[-4,10]], TRACE_WIDTH);
-  traceTubes([[-3,-20],[-3,-11],[-5,-9],[-5,-8]], TRACE_WIDTH);
-  traceTubes([[-2.5,-20],[-2.5,-10.5],[-5.5,-7.5],[-5.5,-0.5],[-3.5,1.5],[-3.5,10]], TRACE_WIDTH);
-  traceTubes([[-1,-20],[-1,-11],[-5,-7],[-5,-1],[-3,1],[-3,10]], TRACE_WIDTH);
-  traceTubes([[-0.5,-20],[-0.5,-10.5],[-4.5,-6.5],[-4.5,-1.5],[-2.5,0.5],[-2.5,10]], TRACE_WIDTH);
-  traceTubes([[0,-20],[0,-10],[-4,-6],[-4,-2],[-2,0],[-2,10]], TRACE_WIDTH);
-  traceTubes([[1,-20],[1,-9],[-3,-5],[-3,-3],[-2.5,-2.5],[-2.5,-0.5]], TRACE_WIDTH);
-  traceTubes([[1.5,-20],[1.5,-8.5],[-2.5,-4.5],[-2.5,-3.5],[-2,-3],[-2.5,-2.5]], TRACE_WIDTH);
+  for (const trace of BOARD_TRACES) {
+    traceTubes(trace.waypoints, trace.width, trace.animatable ? trace.id : undefined);
+  }
 
 
   // ═══════════════════════════════════════════════════════════════

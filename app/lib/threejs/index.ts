@@ -1,11 +1,11 @@
-import { Renderer } from './renderer';
-import { buildBoard } from './buildBoard';
-import { setCameraScroll } from './scrollCamera';
-import { updateAnimatedTrace } from './animatedTrace';
-import { updateElectricArcs } from './electricArcs';
-import { createScriptController } from './scriptController';
-import { createScriptSequencer } from './scriptSequencer';
-import { DEFAULT_SCRIPT_ROTATION } from './traceScripts';
+import { Renderer } from './renderer/renderer';
+import { buildBoard } from './board/buildBoard';
+import { setCameraScroll } from './renderer/scrollCamera';
+import { updateAnimatedTrace } from './traces/animatedTrace';
+import { updateElectricArcs } from './traces/electricArcs';
+import { createScriptController } from './traces/scriptController';
+import { createScriptSequencer } from './traces/sequencer';
+import { DEFAULT_SCRIPT_ROTATION } from './traces/scripts';
 
 
 export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {

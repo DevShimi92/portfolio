@@ -6,8 +6,8 @@ import {
   resolveActiveTraces,
   resolveTraceConfig,
   resolveStartupDelay,
-} from './traceRegistry';
-import { TRACE_SCRIPTS } from './traceScripts';
+} from './registry';
+import { TRACE_SCRIPTS } from './scripts';
 
 // ═══════════════════════════════════════════════════════════════
 //  SCRIPT CONTROLLER

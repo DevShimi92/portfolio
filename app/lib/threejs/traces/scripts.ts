@@ -1,5 +1,5 @@
 import { TraceScript } from '@/app/types/traceScript';
-import { resolveDistanceAtWaypoint } from './traceRegistry';
+import { resolveDistanceAtWaypoint } from './registry';
 
 //  C'est ici qu'on crée / édite les scénarios d'animation, sans
 //  toucher au moteur.

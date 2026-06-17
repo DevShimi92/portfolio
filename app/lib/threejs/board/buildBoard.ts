@@ -1,20 +1,20 @@
 import * as THREE from 'three';
 import { AnimatedTrace } from '@/app/types/animatedTrace';
 import { TraceSegment }  from '@/app/types/traceSegment';
-import { ALL_TRACES, BOARD_TRACES } from './traceRegistry';
+import { ALL_TRACES, BOARD_TRACES } from '../traces/registry';
 import {
   createStaticMaterials,
   createGlowFrontMat,
   createGlowBackMat,
   createGlowFilamentMat,
-} from './materialsGlow';
+} from './materials';
 import {
   BOARD_HEIGHT,
   BOARD_SURFACE,
   FILAMENT_Y,
   toWorldX,
   toWorldZ,
-} from './boardConstants';
+} from './constants';
 
 // ═══════════════════════════════════════════════════════════════
 //  buildBoard

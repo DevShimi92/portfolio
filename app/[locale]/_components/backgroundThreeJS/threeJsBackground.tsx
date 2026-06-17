@@ -2,7 +2,7 @@
 import { useRef, useEffect } from 'react';
 import { initThreeSceneBackground } from '@/app/lib/threejs';
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
-import { isScrollEnabled } from '@/app/lib/threejs/cameraProfile'
+import { isScrollEnabled } from '@/app/lib/threejs/renderer/cameraProfile'
 
 // Selon le terminal, on réduit voir on déactive le background
 function getMobilePerf(): 'full' | 'reduced' | 'none' {

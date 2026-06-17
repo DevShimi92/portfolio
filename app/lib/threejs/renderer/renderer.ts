@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { getCameraProfile } from '@/app/lib/threejs/cameraProfile'
+import { getCameraProfile } from '@/app/lib/threejs/renderer/cameraProfile'
 
 export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (deltaTime: number) => void) {
 

@@ -2,7 +2,7 @@ import { TraceAnimationConfig } from '@/app/types/traceAnimationConfig';
 import { TraceDefinition } from '@/app/types/traceDefinition';
 import { TraceScript } from '@/app/types/traceScript';
 import { BoardTrace } from '@/app/types/boardTrace';
-import { GRID_UNIT, TRACE_WIDTH } from './boardConstants';
+import { GRID_UNIT, TRACE_WIDTH } from '../board/constants';
 // ═══════════════════════════════════════════════════════════════
 //  TRACE REGISTRY
 //

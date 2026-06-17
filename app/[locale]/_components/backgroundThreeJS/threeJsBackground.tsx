@@ -1,39 +1,39 @@
 'use client'
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { initThreeSceneBackground } from '@/app/lib/threejs';
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import { isScrollEnabled } from '@/app/lib/threejs/renderer/cameraProfile'
-
-// Selon le terminal, on réduit voir on déactive le background
-function getMobilePerf(): 'full' | 'reduced' | 'none' {
-  if (typeof window === 'undefined') return 'full';
-  const isMobile = window.innerWidth < 768;
-  if (!isMobile) return 'full';
-
-  const cores = navigator.hardwareConcurrency ?? 4;
-  const memory = navigator.deviceMemory ?? 4;
- // GB, pas dispo sur Safari
-
-  if (cores <= 4 && memory <= 2) return 'none';
-  if (cores <= 6 || memory <= 4) return 'reduced';
-  return 'full';
-}
+import { detectPerfTier, type PerfLevel } from '@/app/lib/threejs/perf/detectPerfTier'
 
 const MAX_BLUR = 7 // px
+
+// Fond d'attente / fallback statique (chargement, ou perfLevel 'none')
+const HOLDING_BG = {
+  position: 'fixed', inset: 0, zIndex: -1,
+  background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)',
+} as const
 
 export default function ThreeJsBackground() {
 
   const mountRef = useRef<HTMLDivElement>(null);
   const { blurAmount } = useBackground()
   const setCameraScrollRef = useRef<((p: number) => void) | null>(null)
-  const perfLevel = getMobilePerf()
   const scrollActiveRef = useRef(isScrollEnabled())
 
+  // perfLevel résolu de façon asynchrone (detect-gpu). null = en cours.
+  const [perfLevel, setPerfLevel] = useState<PerfLevel | null>(null)
 
-
+  // ── Détection du palier (une fois, au montage) ────────────────
   useEffect(() => {
+    let cancelled = false
+    detectPerfTier().then(level => { if (!cancelled) setPerfLevel(level) })
+    return () => { cancelled = true }
+  }, [])
+
+  // ── Init de la scène une fois le palier connu ─────────────────
+  useEffect(() => {
+    if (perfLevel === null || perfLevel === 'none') return;
     if (!mountRef.current) return;
-    if (perfLevel == 'none')return;
     const { cleanup, setCameraScroll } = initThreeSceneBackground(mountRef.current, perfLevel);
     setCameraScrollRef.current = setCameraScroll
 
@@ -70,29 +70,24 @@ export default function ThreeJsBackground() {
     return cleanup;
   }, [perfLevel]);
 
-  if (perfLevel === 'none') {
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: -1,
-        background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)',
-        }} />
-    )
+  // En attente de détection ou WebGL indisponible → fond statique
+  if (perfLevel === null || perfLevel === 'none') {
+    return <div style={HOLDING_BG} />
   }
-  else {
-    return (
-      <div
-        ref={mountRef}
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: -1,
-          pointerEvents: 'none',
-          opacity: 0,
-          transition: 'opacity 800ms ease-in-out',
-          willChange: 'filter',
-          filter: `blur(${(blurAmount * MAX_BLUR).toFixed(2)}px)`,
-        }}
-      />
-    )
-  }
+
+  return (
+    <div
+      ref={mountRef}
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: -1,
+        pointerEvents: 'none',
+        opacity: 0,
+        transition: 'opacity 800ms ease-in-out',
+        willChange: 'filter',
+        filter: `blur(${(blurAmount * MAX_BLUR).toFixed(2)}px)`,
+      }}
+    />
+  )
 }

@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { getCameraProfile } from '@/app/lib/threejs/renderer/cameraProfile'
+import type { PerfLevel } from '@/app/lib/threejs/perf/detectPerfTier'
 
-export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (deltaTime: number) => void) {
+export function Renderer(mount: HTMLDivElement, perfLevel: PerfLevel, onUpdate?: (deltaTime: number) => void) {
 
   const scene = new THREE.Scene();
 
@@ -11,7 +12,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   //  RENDERER
   // ─────────────────────────────────────────────────────────
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  if (perfLevel == "reduced") {
+  if (perfLevel === "reduced") {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
   }
   else
@@ -103,7 +104,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   function animate(time: number) {
     clock.update(time)
     const deltaTime = clock.getDelta();
-    if (perfLevel == "reduced") {
+    if (perfLevel === "reduced") {
       if (time - lastTime < FRAME_INTERVAL) return
         lastTime = time
     }

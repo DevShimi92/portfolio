@@ -6,9 +6,10 @@ import { updateElectricArcs } from './traces/electricArcs';
 import { createScriptController } from './traces/scriptController';
 import { createScriptSequencer } from './traces/sequencer';
 import { DEFAULT_SCRIPT_ROTATION } from './traces/scripts';
+import type { PerfLevel } from './perf/detectPerfTier';
 
 
-export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {
+export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: PerfLevel) {
 
   const { renderer, scene, camera, target, applyCamera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
 

@@ -1,5 +1,3 @@
-import { getGPUTier } from 'detect-gpu';
-
 // ═══════════════════════════════════════════════════════════════
 //  DÉTECTION DU NIVEAU DE PERF
 //
@@ -15,8 +13,10 @@ import { getGPUTier } from 'detect-gpu';
 //    — Garde-fous UX (prefers-reduced-motion / saveData) plafonnent
 //      à 'reduced' quel que soit le tier.
 //
-//  Async : detect-gpu charge un fichier de benchmark à la demande.
-//  Appelé une seule fois côté client (le composant est ssr:false).
+//  Async : detect-gpu est importé DYNAMIQUEMENT dans la branche
+//  mobile uniquement → le desktop ne le télécharge jamais (il sort
+//  avant l'import). Charge ensuite un fichier de benchmark à la
+//  demande. Appelé une seule fois côté client (le composant est ssr:false).
 // ═══════════════════════════════════════════════════════════════
 
 export type PerfLevel = 'full' | 'reduced' | 'none';
@@ -40,6 +40,8 @@ export async function detectPerfTier(): Promise<PerfLevel> {
   // ── Tiering GPU (base de benchmarks self-hostée) ──────────────
   let base: PerfLevel;
   try {
+    // Import dynamique : detect-gpu reste hors du chunk desktop.
+    const { getGPUTier } = await import('detect-gpu');
     const { tier, type } = await getGPUTier({ benchmarksURL: '/detect-gpu/benchmarks' });
 
     if (type === 'WEBGL_UNSUPPORTED' || tier <= 0) {

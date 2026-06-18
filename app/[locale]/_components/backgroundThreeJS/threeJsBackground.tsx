@@ -7,7 +7,6 @@ import { detectPerfTier, type PerfLevel } from '@/app/lib/threejs/perf/detectPer
 
 const MAX_BLUR = 7 // px
 
-// Fond d'attente / fallback statique (chargement, ou perfLevel 'none')
 const HOLDING_BG = {
   position: 'fixed', inset: 0, zIndex: -1,
   background: 'linear-gradient(135deg, #000508 0%, #040c14 100%)',
@@ -23,54 +22,69 @@ export default function ThreeJsBackground() {
   // perfLevel résolu de façon asynchrone (detect-gpu). null = en cours.
   const [perfLevel, setPerfLevel] = useState<PerfLevel | null>(null)
 
-  // ── Détection du palier (une fois, au montage) ────────────────
   useEffect(() => {
     let cancelled = false
     detectPerfTier().then(level => { if (!cancelled) setPerfLevel(level) })
     return () => { cancelled = true }
   }, [])
 
-  // ── Init de la scène une fois le palier connu ─────────────────
   useEffect(() => {
     if (perfLevel === null || perfLevel === 'none') return;
     if (!mountRef.current) return;
-    const { cleanup, setCameraScroll } = initThreeSceneBackground(mountRef.current, perfLevel);
-    setCameraScrollRef.current = setCameraScroll
 
-    let rafId: number
+    let scene: { cleanup: () => void } | null = null;
 
-    const onScroll = () => {
-      cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(() => {
-        const maxScroll = document.body.scrollHeight - window.innerHeight
-        if (maxScroll <= 0) return
-        const progress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1)
-          setCameraScrollRef.current?.(progress)
-      })
-    }
+    // Construction réelle de la scène (différée ci-dessous)
+    const build = () => {
+      if (!mountRef.current) return;
+      const { cleanup, setCameraScroll } = initThreeSceneBackground(mountRef.current, perfLevel);
+      scene = { cleanup };
+      setCameraScrollRef.current = setCameraScroll
 
-    if (scrollActiveRef.current) {
-      window.addEventListener('scroll', onScroll, { passive: true })
-    }
+      let rafId: number
 
-    window.addEventListener('resize', () => {
-      const shouldBeActive = isScrollEnabled()
-      if (shouldBeActive && !scrollActiveRef.current) {
-        window.addEventListener('scroll', onScroll, { passive: true })
-      } else if (!shouldBeActive && scrollActiveRef.current) {
-        window.removeEventListener('scroll', onScroll)
-      }
-      scrollActiveRef.current = shouldBeActive
-    })
-
-    requestAnimationFrame(() => {
-            if (mountRef.current) mountRef.current.style.opacity = '1'
+      const onScroll = () => {
+        cancelAnimationFrame(rafId)
+        rafId = requestAnimationFrame(() => {
+          const maxScroll = document.body.scrollHeight - window.innerHeight
+          if (maxScroll <= 0) return
+          const progress = Math.min(Math.max(window.scrollY / maxScroll, 0), 1)
+            setCameraScrollRef.current?.(progress)
         })
+      }
 
-    return cleanup;
+      if (scrollActiveRef.current) {
+        window.addEventListener('scroll', onScroll, { passive: true })
+      }
+
+      window.addEventListener('resize', () => {
+        const shouldBeActive = isScrollEnabled()
+        if (shouldBeActive && !scrollActiveRef.current) {
+          window.addEventListener('scroll', onScroll, { passive: true })
+        } else if (!shouldBeActive && scrollActiveRef.current) {
+          window.removeEventListener('scroll', onScroll)
+        }
+        scrollActiveRef.current = shouldBeActive
+      })
+
+      requestAnimationFrame(() => {
+              if (mountRef.current) mountRef.current.style.opacity = '1'
+          })
+    }
+
+    // Différé : build quand le thread est libre.
+    // setTimeout = repli UNIQUEMENT pour Safari (pas de requestIdleCallback).
+    const idleId = window.requestIdleCallback
+      ? window.requestIdleCallback(build)
+      : window.setTimeout(build, 200)
+
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(idleId)
+      else window.clearTimeout(idleId)
+      scene?.cleanup()
+    };
   }, [perfLevel]);
 
-  // En attente de détection ou WebGL indisponible → fond statique
   if (perfLevel === null || perfLevel === 'none') {
     return <div style={HOLDING_BG} />
   }

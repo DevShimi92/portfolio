@@ -11,7 +11,7 @@ import { Materials } from '@/app/types/materials';
 //  Si une trace future dépasse 4 segments, augmenter cette valeur
 //  ET mettre à jour le #define dans GLSL_POLYLINE_PROJECTION.
 // ─────────────────────────────────────────────────────────
-const MAX_SEGMENTS_PER_TRACE = 4;
+const MAX_SEGMENTS_PER_TRACE = 8;
 
 // ─────────────────────────────────────────────────────────
 //  GLSL PARTAGÉ — projection d'un fragment sur la polyligne

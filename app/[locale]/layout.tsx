@@ -1,7 +1,7 @@
 import { Syne, JetBrains_Mono } from 'next/font/google';
 import { NextIntlClientProvider } from "next-intl";
 import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
-import ThreeSceneLoader from "@/app/components/background/threeLoader"
+import ThreeSceneLoader from "@/app/[locale]/_components/backgroundThreeJS/threeLoader"
 import ScrollHint from './_components/ScrollHint/ScrollHint';
 import NavBar from './_components/navBar/navbar';
 import ThemeProvider from '@/app/[locale]/_components/themeProvider/ThemeProvider'

@@ -34,11 +34,7 @@ export function updateAnimatedTrace(
 ): number {
 
   const { animationState, totalLength, glowMaterials } = trace;
-  const allMaterials = [
-    glowMaterials.frontSurface,
-    glowMaterials.innerSurface,
-    glowMaterials.filamentCore,
-  ];
+  const allMaterials = Object.values(glowMaterials);
 
   // Sync des réglages visuels à chaque frame — peu coûteux
   // (permet de les modifier en live depuis l'extérieur si besoin)
@@ -46,6 +42,16 @@ export function updateAnimatedTrace(
     mat.uniforms.uGlowIntensity.value   = animationConfig.glowIntensity;
     mat.uniforms.uFrontHaloLength.value = animationConfig.frontHaloLength;
   });
+
+  // ── Cycle terminé — la trace reste éteinte ───────────────────
+  // Une fois son fill→hold→fade fait, la trace ne reboucle PAS
+  // d'elle-même : elle tient à 0 jusqu'à la réactivation du script
+  // (le sequencer ré-active quand toutes les traces ont fini).
+  // Évite qu'une trace finie repulse en attendant ses voisines.
+  if (animationState.cycleComplete) {
+    pushUniforms(allMaterials, animationState.distanceTravelled, 0);
+    return 1;
+  }
 
   // ── Délai de démarrage initial ───────────────────────────────
   if (!animationState.hasStarted) {
@@ -99,10 +105,13 @@ export function updateAnimatedTrace(
     pushUniforms(allMaterials, totalLength, brightness);
 
     if (animationState.phaseElapsedTime >= animationConfig.fadeDuration) {
-      // Reset complet — recommence le cycle
-      animationState.distanceTravelled = 0;
-      animationState.animationPhase    = 'fill';
-      animationState.phaseElapsedTime  = 0;
+      // Cycle complet (fill→hold→fade) terminé. On NE reboucle PAS :
+      // on latche cycleComplete et la trace tient à 0 (court-circuit
+      // en tête de fonction) jusqu'à la réactivation du script par
+      // le sequencer. Le reset (distanceTravelled = startDistance,
+      // phase = 'fill', cycleComplete = false) est fait par activateScript.
+      animationState.cycleComplete = true;
+      pushUniforms(allMaterials, totalLength, 0);
     }
 
     return 1;

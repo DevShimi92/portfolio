@@ -1,6 +1,8 @@
 import * as THREE from 'three';
+import { getCameraProfile } from '@/app/lib/threejs/renderer/cameraProfile'
+import type { PerfLevel } from '@/app/lib/threejs/perf/detectPerfTier'
 
-export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (deltaTime: number) => void) {
+export function Renderer(mount: HTMLDivElement, perfLevel: PerfLevel, onUpdate?: (deltaTime: number) => void) {
 
   const scene = new THREE.Scene();
 
@@ -10,7 +12,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   //  RENDERER
   // ─────────────────────────────────────────────────────────
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  if (perfLevel == "reduced") {
+  if (perfLevel === "reduced") {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1));
   }
   else
@@ -61,13 +63,8 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   let target = targetPC
 
   function AdaptedCameraPosition() {
-    const aspect = window.innerWidth / window.innerHeight;
-
-    const profile:string = aspect >= 1.2 ? 'DESKTOP' : aspect >= 0.8 ? 'TABLET' : 'MOBILE-PORTRAIT';
-    if (profile == 'DESKTOP')
-      target = targetPC
-    else
-      target = targetMobile
+    const profile = getCameraProfile()
+    target = profile === 'MOBILE-PORTRAIT' ? targetMobile : targetPC
   }
 
   function applyCamera() {
@@ -107,7 +104,7 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   function animate(time: number) {
     clock.update(time)
     const deltaTime = clock.getDelta();
-    if (perfLevel == "reduced") {
+    if (perfLevel === "reduced") {
       if (time - lastTime < FRAME_INTERVAL) return
         lastTime = time
     }
@@ -119,6 +116,6 @@ export function Renderer(mount: HTMLDivElement, perfLevel: string, onUpdate?: (d
   mount.appendChild(renderer.domElement);
 
   return {
-    renderer, scene, camera,
+    renderer, scene, camera, target, applyCamera,
     cleanEventResize: () => window.removeEventListener('resize', onResize)};
 }

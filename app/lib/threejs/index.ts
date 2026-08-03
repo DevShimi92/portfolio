@@ -1,55 +1,57 @@
-import * as THREE from 'three';
-import { Renderer } from './renderer';
-import { buildBoard } from './buildBoard';
-import { AnimatedTrace } from '@/app/types/animatedTrace';
-import { updateAnimatedTrace } from './animatedTrace';
-import { initElectricArcPool, updateElectricArcs, ElectricArcPool } from './electricArcs';
-import { createScriptController } from './scriptController';
-import { TRACE_SCRIPTS, DEFAULT_SCRIPT, resolveActiveTraces, resolveAnimationConfig } from './traceRegistry';
+import { Renderer } from './renderer/renderer';
+import { buildBoard } from './board/buildBoard';
+import { setCameraScroll } from './renderer/scrollCamera';
+import { updateAnimatedTrace } from './traces/animatedTrace';
+import { updateElectricArcs } from './traces/electricArcs';
+import { createScriptController } from './traces/scriptController';
+import { createScriptSequencer } from './traces/sequencer';
+import { DEFAULT_SCRIPT_ROTATION } from './traces/scripts';
+import type { PerfLevel } from './perf/detectPerfTier';
 
 
-export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: string) {
+export function initThreeSceneBackground(mount: HTMLDivElement, perfLevel: PerfLevel) {
 
-  const { renderer, scene, camera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
+  const { renderer, scene, camera, target, applyCamera, cleanEventResize } = Renderer(mount,perfLevel, (deltaTime: number) => onAnimationTick(deltaTime));
 
-  // buildBoard construit toute la scène et retourne les traces animables
   const animatedTraceMap = buildBoard(scene);
   const scriptController = createScriptController(animatedTraceMap, scene);
+  const sequencer        = createScriptSequencer(scriptController);
 
-   if (perfLevel === 'full')scriptController.activateScript(DEFAULT_SCRIPT);
+  if (perfLevel === 'full') sequencer.start(DEFAULT_SCRIPT_ROTATION);
 
-  // Appelé par renderer.ts à chaque frame via le callback onAnimationTick
   function onAnimationTick(deltaTime: number) {
-      const traces  = scriptController.getActiveTraces();
-      const pools   = scriptController.getActiveArcPools();
-      const config  = scriptController.getAnimationConfig();
+    scriptController.getActiveEntries().forEach(({ trace, config, arcPool }) => {
+      updateAnimatedTrace(trace, deltaTime, config);
 
-      traces.forEach((trace, i) => {
-        updateAnimatedTrace(trace, deltaTime, config);
+      const brightness = !trace.animationState.hasStarted
+        ? 0
+        : trace.animationState.animationPhase === 'fade'
+          ? Math.max(0, 1 - trace.animationState.phaseElapsedTime / config.fadeDuration)
+          : 1;
 
-        const brightness = !trace.animationState.hasStarted
-          ? 0
-          : trace.animationState.animationPhase === 'fade'
-            ? Math.max(0, 1 - trace.animationState.phaseElapsedTime / config.fadeDuration)
-            : 1;
+      updateElectricArcs(
+        arcPool,
+        trace.traceSegments,
+        trace.animationState.distanceTravelled,
+        trace.animationState.startDistance,
+        brightness,
+        deltaTime,
+        config
+      );
+    });
 
-        updateElectricArcs(
-          pools[i],
-          trace.traceSegments,
-          trace.animationState.distanceTravelled,
-          brightness,
-          deltaTime,
-          config
-        );
-      });
-    }
+    sequencer.tick();
+  }
 
   return {
     renderer, camera,
-    activateScript: scriptController.activateScript,
+    playTriggeredScript: sequencer.playTriggeredScript,
+    releaseTriggered:    sequencer.releaseTriggered,
+    setCameraScroll: (scrollProgress: number) => setCameraScroll(scrollProgress, target, applyCamera),
     cleanup: () => {
       renderer.setAnimationLoop(null);        // stoppe la boucle
       cleanEventResize();                     // retire le listener resize
+      scriptController.deactivate();          // libère arcs + renderOrder (anti-fuite)
       mount.removeChild(renderer.domElement)  // retire le canvas du DOM
       renderer.dispose();                     // libère le contexte WebGL
     }};

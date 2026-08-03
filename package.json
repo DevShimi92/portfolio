@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@vercel/blob": "^2.4.0",
+    "detect-gpu": "^5.0.70",
     "framer-motion": "^12.40.0",
     "next": "^16.2.7",
     "next-intl": "^4.13.0",

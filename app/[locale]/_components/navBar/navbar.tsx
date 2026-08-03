@@ -41,7 +41,7 @@ export default function NavBar() {
         ))}
       </nav>
       <SocialLinks />
-      <ThemeToggle />
+      {/*<ThemeToggle />*/}
       <LangToggle />
 
       {/* ── Mobile : bouton hamburger ── */}
@@ -77,7 +77,7 @@ export default function NavBar() {
             <SocialLinksInline />
           </div>
           <div className={hamStyles.overlayBottomRight}>
-            <ThemeToggleInline />
+            {/* <ThemeToggleInline />*/}
             <LangToggleInline />
           </div>
         </div>

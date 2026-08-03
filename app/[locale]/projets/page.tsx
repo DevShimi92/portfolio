@@ -8,21 +8,27 @@ import styles from './projects.module.css'
 
 
 
-function GifOrPlaceholder({ gif, title }: { gif: string | null; title: string }) {
-  if (gif) {
+function VideoOrPlaceholder({ video, title }: { video: Project['video'] | null; title: string }) {
+  if (video) {
     return (
-      <img
-        src={gif}
-        alt={`Aperçu ${title}`}
-        className={styles.gif}
-      />
+      <video
+              className={styles.gif}
+              src={video.src}
+              poster={video.poster}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              aria-label={`Aperçu ${title}`}
+            />
     )
   }
 
-  // Placeholder — affiché si gif est null ou absent
+  // Placeholder — affiché si video est null ou absent
   return (
     <div className={styles.gifPlaceholder}>
-      <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.gif</span>
+      <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.webm</span>
     </div>
   )
 }
@@ -86,7 +92,7 @@ export default function Projets() {
 
           {/* GIF ou placeholder — transition fade */}
           <div className={`${styles.gifBlock} ${isAnimating ? styles.isHidden : ''}`}>
-            <GifOrPlaceholder gif={currentSlide.gif} title={currentSlide.title} />
+            <VideoOrPlaceholder video={currentSlide.video} title={currentSlide.title} />
           </div>
 
           {/* Bloc info — desktop : bas droite / mobile : overlay pleine largeur */}

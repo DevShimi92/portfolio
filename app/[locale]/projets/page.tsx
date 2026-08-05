@@ -1,6 +1,6 @@
 'use client'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Project } from '@/app/types/projets'
 import styles from './projects.module.css'
@@ -8,21 +8,45 @@ import styles from './projects.module.css'
 
 
 
-function GifOrPlaceholder({ gif, title }: { gif: string | null; title: string }) {
-  if (gif) {
+function VideoOrPlaceholder({ video, title }: { video: Project['video'] | null; title: string }) {
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  if (!video) {
     return (
-      <img
-        src={gif}
-        alt={`Aperçu ${title}`}
-        className={styles.gif}
-      />
+      <div className={styles.gifPlaceholder}>
+        <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.webm</span>
+      </div>
     )
   }
 
-  // Placeholder — affiché si gif est null ou absent
+  if (video) {
+    return (
+      <div className={styles.videoWrapper}>
+        {isLoading && (
+          <div className={styles.videoLoader} aria-hidden="true">
+            <span className={styles.spinner} />
+          </div>
+        )}
+        <video
+          className={styles.gif}
+          src={video.src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-label={`Aperçu ${title}`}
+          onCanPlay={() => setIsLoading(false)}
+        />
+      </div>
+    )
+  }
+
+  // Placeholder — affiché si video est null ou absent
   return (
     <div className={styles.gifPlaceholder}>
-      <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.gif</span>
+      <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.webm</span>
     </div>
   )
 }
@@ -52,7 +76,7 @@ export default function Projets() {
   }
 
   return (
-    <section className={styles.section}>
+    <div className={styles.section}>
 
         {/* Titre section */}
         <div className={styles.sectionHeader}>
@@ -86,7 +110,7 @@ export default function Projets() {
 
           {/* GIF ou placeholder — transition fade */}
           <div className={`${styles.gifBlock} ${isAnimating ? styles.isHidden : ''}`}>
-            <GifOrPlaceholder gif={currentSlide.gif} title={currentSlide.title} />
+            <VideoOrPlaceholder key={currentSlide.video?.src ?? currentIndex} video={currentSlide.video} title={currentSlide.title} />
           </div>
 
           {/* Bloc info — desktop : bas droite / mobile : overlay pleine largeur */}
@@ -125,6 +149,6 @@ export default function Projets() {
 
         </div>
 
-      </section>
+      </div>
   )
 }

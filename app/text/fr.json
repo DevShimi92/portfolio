@@ -21,7 +21,9 @@
       "title":       "Game Jam",
       "label":       "#Hackathon #Godot",
       "description": "Réalistion de jeux vidéo thématisé. Conception, développement et livraison sous contrainte de temps. Chaque projet explore un mécanisme et une vision de jeu différente.",
-      "gif":         "/gif/tempoGifGamJam.gif",
+      "video":  {
+        "src":"/webm/gamejam.webm"
+      },
       "href":        "https://shimi92.itch.io/",
       "hrefLabel":   "Voir sur Itch.io",
       "isHobby":     false
@@ -29,7 +31,9 @@
       "title":       "Homelab",
       "label":       "#Domotique #Docker #Réseau privé",
       "description":  "Orchestration de services docker dans un réseau domestique : gestion centralisée de logs, reverse proxy, monitoring et réseau. Chaque stack répond à un problème concret en tant que particulier ou professionel.",
-      "gif":         "/gif/tempoGifGamJam.gif",
+      "video":  {
+        "src":"/webm/homelab.webm"
+      },
       "href":        null,
       "hrefLabel":   null,
       "isHobby":     true
@@ -37,7 +41,9 @@
       "title":       "Ce Portfolio",
       "label":       null,
       "description":  "Parce qu'on a tous besoin d'une sorte de carte de viste. Vitrine de ce qui est à la fois mon métier et ma passion.",
-      "gif":         "/gif/tempoGifGamJam.gif",
+      "video":  {
+        "src":"/webm/portfolio.webm"
+      },
       "href":        null,
       "hrefLabel":   null,
       "isHobby":     false

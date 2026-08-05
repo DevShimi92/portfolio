@@ -28,7 +28,7 @@ export default function AboutMe() {
   const bioLines   = t.raw('bioLines')   as string[]
   const highlights = t.raw('highlights') as Highlight[]
   return (
-    <section className={styles.section}>
+    <div className={styles.section}>
         <div className={styles.container}>
           <PhotoFrame imgUrl="/api/profile-img" cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>
           <div className={styles.textBlock}>
@@ -41,8 +41,7 @@ export default function AboutMe() {
                         ))}
             </div>
           </div>
-
         </div>
-      </section>
+      </div>
     );
 }

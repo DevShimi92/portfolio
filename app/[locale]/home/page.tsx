@@ -10,13 +10,13 @@ export default function Home() {
 
 
   return (
-    <section id="home" className={`section-full ${styles.homeSection}`}>
+    <div className={`section-full ${styles.homeSection}`}>
       <HeroContent
         name={name}
         role={t('role')}
         disciplines={disciplines}
         locale={locale}
       />
-    </section>
+    </div>
   );
 }

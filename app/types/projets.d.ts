@@ -7,6 +7,5 @@ export interface Project {
   isHobby: boolean
   video: {
       src: string
-      poster?: string
     } | null
 }

@@ -1,6 +1,6 @@
 'use client'
 import { useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import type { Project } from '@/app/types/projets'
 import styles from './projects.module.css'
@@ -9,19 +9,37 @@ import styles from './projects.module.css'
 
 
 function VideoOrPlaceholder({ video, title }: { video: Project['video'] | null; title: string }) {
+
+  const [isLoading, setIsLoading] = useState(true)
+
+  if (!video) {
+    return (
+      <div className={styles.gifPlaceholder}>
+        <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.webm</span>
+      </div>
+    )
+  }
+
   if (video) {
     return (
-      <video
-              className={styles.gif}
-              src={video.src}
-              poster={video.poster}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              aria-label={`Aperçu ${title}`}
-            />
+      <div className={styles.videoWrapper}>
+        {isLoading && (
+          <div className={styles.videoLoader} aria-hidden="true">
+            <span className={styles.spinner} />
+          </div>
+        )}
+        <video
+          className={styles.gif}
+          src={video.src}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-label={`Aperçu ${title}`}
+          onCanPlay={() => setIsLoading(false)}
+        />
+      </div>
     )
   }
 
@@ -92,7 +110,7 @@ export default function Projets() {
 
           {/* GIF ou placeholder — transition fade */}
           <div className={`${styles.gifBlock} ${isAnimating ? styles.isHidden : ''}`}>
-            <VideoOrPlaceholder video={currentSlide.video} title={currentSlide.title} />
+            <VideoOrPlaceholder key={currentSlide.video?.src ?? currentIndex} video={currentSlide.video} title={currentSlide.title} />
           </div>
 
           {/* Bloc info — desktop : bas droite / mobile : overlay pleine largeur */}

@@ -21,8 +21,7 @@
       "label":       "#Hackathon #Godot",
       "description":  "Making some thematic video games. Design, development and CI/CD with time constraints. Each project explores some difference mechanic and game vision.",
       "video":  {
-        "src":"/webm/gamejam.webm",
-        "poster":""
+        "src":"/webm/gamejam.webm"
       },
       "href":        "https://shimi92.itch.io/",
       "hrefLabel":   "See on Itch.io",
@@ -32,8 +31,7 @@
       "label":       "#HomeAssistant #Docker #Personal Network",
       "description":  "Orchestration of docker service in a home network : centralized log, reverse proxy, monitoring and sub-network. Each stack addresses a specific problem, whether for individuals purpose or businesses purpose.",
       "video":  {
-        "src":null,
-        "poster":""
+        "src":"/webm/homelab.webm"
       },
       "href":        null,
       "hrefLabel":   null,
@@ -43,8 +41,7 @@
       "label":       null,
       "description":  "Because we all need a sort of business card. A showcase of what is my profession and my passion at same time.",
       "video":  {
-        "src":"/webm/portfolio.webm",
-        "poster":""
+        "src":"/webm/portfolio.webm"
       },
       "href":        null,
       "hrefLabel":   null,

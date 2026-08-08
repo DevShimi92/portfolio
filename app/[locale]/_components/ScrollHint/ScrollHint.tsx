@@ -1,15 +1,17 @@
 'use client'
+import { useActiveNavLink } from '@/app/[locale]/_hooks/useActiveNavLink'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import styles from './ScrollHint.module.css'
 
 const FADE_THRESHOLD = 0.15
 
+
 export default function ScrollHint() {
   const { blurAmount } = useBackground()
-
   const opacity = Math.max(0, 1 - blurAmount / FADE_THRESHOLD)
 
-  if (opacity === 0) return null
+  const { isStandaloneRoute } = useActiveNavLink()
+  if (isStandaloneRoute || opacity === 0) return null
 
   function scrollToNext() {
     const nextSection = document.getElementById('about')

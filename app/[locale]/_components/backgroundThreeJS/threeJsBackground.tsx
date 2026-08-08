@@ -4,6 +4,7 @@ import { initThreeSceneBackground } from '@/app/lib/threejs';
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import { isScrollEnabled } from '@/app/lib/threejs/renderer/cameraProfile'
 import { detectPerfTier, type PerfLevel } from '@/app/lib/threejs/perf/detectPerfTier'
+import { useActiveNavLink } from '@/app/[locale]/_hooks/useActiveNavLink'
 
 const MAX_BLUR = 7 // px
 
@@ -18,9 +19,15 @@ export default function ThreeJsBackground() {
   const { blurAmount } = useBackground()
   const setCameraScrollRef = useRef<((p: number) => void) | null>(null)
   const scrollActiveRef = useRef(isScrollEnabled())
+  const { isStandaloneRoute } = useActiveNavLink()
+  const isStandaloneRouteRef = useRef(isStandaloneRoute)
 
   // perfLevel résolu de façon asynchrone (detect-gpu). null = en cours.
   const [perfLevel, setPerfLevel] = useState<PerfLevel | null>(null)
+
+  useEffect(() => {
+    isStandaloneRouteRef.current = isStandaloneRoute
+  }, [isStandaloneRoute])
 
   useEffect(() => {
     let cancelled = false
@@ -44,6 +51,7 @@ export default function ThreeJsBackground() {
       let rafId: number
 
       const onScroll = () => {
+        if (isStandaloneRouteRef.current) return
         cancelAnimationFrame(rafId)
         rafId = requestAnimationFrame(() => {
           const maxScroll = document.body.scrollHeight - window.innerHeight

@@ -49,6 +49,23 @@
       "isHobby":     false
     }]
   },
+  "contactPage":{
+    "title": "On papote ?",
+    "emailLabel": "Votre adresse email",
+    "emailPlaceholder": "vous@exemple.com",
+    "messageLabel": "Votre message",
+    "messagePlaceholder": "Une demande ? Un projet ? Ou vous voulez parler d'un sujet ? Tout commencera a partir de ce message.",
+    "submitLabel": "Envoyer",
+    "submitPending": "Envoi en cours...",
+    "successMessage": "Message envoyé ! Je reviens vers vous des que possible.",
+    "errors": {
+      "invalidEmail": "Adresse email invalide.",
+      "messageTooShort": "Le message est trop court.",
+      "messageTooLong": "Le message est trop long (2000 caractères max).",
+      "sendFailed": "L'envoi a échoué, réessayez plus tard.",
+      "default": "Une erreur est survenue."
+    }
+  },
   "footer": {
     "text": "Construit par votre serviteur"
   },

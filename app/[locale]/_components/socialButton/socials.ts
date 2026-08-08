@@ -1,12 +1,12 @@
 export const socials = [
   {
     label: 'GitHub',
-    href: 'https://github.com/',
+    href:  process.env.NEXT_PUBLIC_GITHUB_URL ?? '',
     icon: 'github',
   },
   {
     label: 'LinkedIn',
-    href: 'https://linkedin.com/in/',
+    href:  process.env.NEXT_PUBLIC_LINKEDIN_URL ?? '',
     icon: 'linkedin',
   },
 ]

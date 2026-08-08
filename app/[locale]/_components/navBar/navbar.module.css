@@ -54,6 +54,7 @@
 
 /* ─── Bouton nav ─── */
 .navBtn {
+  text-decoration: none;
   position: relative;
   display: flex;
   align-items: center;

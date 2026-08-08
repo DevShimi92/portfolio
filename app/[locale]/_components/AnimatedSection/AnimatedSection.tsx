@@ -2,6 +2,8 @@
 import { motion, useInView } from 'framer-motion'
 import { useRef, useEffect } from 'react'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
+import { setLastScrollY } from '@/app/lib/scrollMemory'
+
 
 interface Props {
   children: React.ReactNode
@@ -26,6 +28,7 @@ export default function AnimatedSection({ children, id, isHome }: Props) {
         if (!section) return
         const scrollProgress = Math.min(Math.max(window.scrollY / section.offsetHeight, 0), 1)
         setBlurAmount(scrollProgress)
+        setLastScrollY(window.scrollY)
       })
     }
 

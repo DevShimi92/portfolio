@@ -8,15 +8,8 @@ import { useBackground } from '@/app/[locale]/_components/BackgroundContext/Back
 import SocialLinks, { SocialLinksInline } from '@/app/[locale]/_components/socialButton/socialButton'
 import ThemeToggle, { ThemeToggleInline } from '../themeToggle/themeToggle'
 import LangToggle, { LangToggleInline } from '../langToggle/langToggle'
-
-type NavLink = | { id: string; label: string; type: 'section' } | { id: string; label: string; type: 'route'; path: string }
-
-const LINKS: NavLink[] = [
-  { id: 'home',    label: 'Home',    type: 'section' },
-  { id: 'about',   label: 'Info',    type: 'section' },
-  { id: 'projets', label: 'Projets', type: 'section' },
-  { id: 'contact', label: 'Contact', type: 'route', path: '/contact' },
-]
+import { NAV_LINKS } from '@/app/lib/navigation'
+import type { NavLink } from '@/app/types/navlink';
 
 const PINNED_SECTIONS = ['articles']
 
@@ -88,7 +81,7 @@ export default function NavBar() {
       {/* ── Desktop : navbar verticale gauche + sociaux fixed ── */}
       <nav
         className={`${navStyles.navbar} ${isPinned ? navStyles.navbarPinned : navStyles.navbarHidden}`} role="navigation" aria-label="Navigation principale">
-        {LINKS.map((link) =>
+        {NAV_LINKS.map((link) =>
             renderLink(link, navStyles.navBtn, navStyles.navBtnActive)
         )}
       </nav>
@@ -112,7 +105,7 @@ export default function NavBar() {
         className={`${hamStyles.overlay} ${menuOpen ? hamStyles.overlayOpen : ''}`}
         aria-hidden={!menuOpen} >
         <nav className={hamStyles.overlayNav} role="navigation" aria-label="Menu mobile">
-          {LINKS.map((link) =>
+          {NAV_LINKS.map((link) =>
             renderLink(link, hamStyles.overlayBtn, hamStyles.overlayBtnActive, menuOpen ? 0 : -1)
           )}
         </nav>

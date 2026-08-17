@@ -1,0 +1,66 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import matter from 'gray-matter'
+import { markdownToHtml } from './markdown'
+import { estimateReadingTime } from './reading-time'
+import type { Article, ArticleFrontmatter, ArticleMeta, Locale } from '@/app/types//articles'
+
+const CONTENT_DIR = path.join(process.cwd(), 'content', 'articles')
+
+function readFrontmatterFile(slug: string, locale: Locale) {
+  const filePath = path.join(CONTENT_DIR, slug, `${locale}.md`)
+  if (!fs.existsSync(filePath)) return null
+  const raw = fs.readFileSync(filePath, 'utf8')
+  return matter(raw)
+}
+
+export function getArticleSlugs(): string[] {
+  if (!fs.existsSync(CONTENT_DIR)) return []
+  return fs
+    .readdirSync(CONTENT_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+}
+
+function toArticleMeta( slug: string, locale: Locale, frontmatter: ArticleFrontmatter, rawContent: string ): ArticleMeta {
+  const readingTimeMinutes = frontmatter.readingTime ?? estimateReadingTime(rawContent)
+  const coverUrl = frontmatter.cover ? `/content/articles/${slug}/${frontmatter.cover}` : undefined
+
+  return { ...frontmatter, slug, locale, coverUrl, readingTimeMinutes }
+}
+
+export function getArticleMeta(slug: string, locale: Locale): ArticleMeta | null {
+  const parsed = readFrontmatterFile(slug, locale)
+  if (!parsed) return null
+  return toArticleMeta(slug, locale, parsed.data as ArticleFrontmatter, parsed.content)
+}
+
+export async function getArticle(slug: string, locale: Locale): Promise<Article | null> {
+  const parsed = readFrontmatterFile(slug, locale)
+  if (!parsed) return null
+
+  const meta = toArticleMeta(slug, locale, parsed.data as ArticleFrontmatter, parsed.content)
+  const contentHtml = await markdownToHtml(parsed.content, slug)
+
+  return { ...meta, contentHtml }
+}
+
+interface GetAllArticlesOptions {
+  includeUnlisted?: boolean
+}
+
+export function getAllArticles(locale: Locale, options: GetAllArticlesOptions = {}): ArticleMeta[] {
+  const { includeUnlisted = false } = options
+
+  const metas = getArticleSlugs()
+    .map((slug) => getArticleMeta(slug, locale))
+    .filter((meta): meta is ArticleMeta => meta !== null)
+    .filter((meta) => includeUnlisted || meta.listed)
+
+  return metas.sort((a, b) => new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime())
+}
+
+export function getAllTags(locale: Locale): string[] {
+  const tags = getAllArticles(locale).flatMap((article) => article.tags)
+  return Array.from(new Set(tags)).sort()
+}

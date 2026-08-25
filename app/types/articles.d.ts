@@ -1,8 +1,10 @@
-export type Locale = 'fr' | 'en'
+import type { routing } from '@/app/i18n/routing'
+
+export type Locale = (typeof routing.locales)[number]
 
 export interface ArticleFrontmatter {
   title: string
-  dateISO: string
+  dateISO?: string
   description: string
   tags: string[]
   listed: boolean
@@ -15,6 +17,7 @@ export interface ArticleMeta extends ArticleFrontmatter {
   locale: Locale
   coverUrl?: string
   readingTimeMinutes: number
+  formattedDate: string | null
 }
 
 export interface Article extends ArticleMeta {

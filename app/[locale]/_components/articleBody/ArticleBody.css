@@ -1,0 +1,140 @@
+/* CSS inporté en global parce que le contenu de .articleBody est injecté via dangerouslySetInnerHTML.
+   Donc il n'y a pas de classes JSX à cibler pour la plupart des éléments (h2, blockquote, pre, ul, etc...) */
+
+
+.articleBody {
+  max-width: 680px;
+  margin: 0 auto;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--clr-text);
+}
+
+.articleBody p {
+  margin-bottom: var(--sp-5);
+}
+
+.articleBody h2 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--clr-rim);
+  margin: var(--sp-7) 0 var(--sp-4);
+  letter-spacing: -0.01em;
+  position: relative;
+  padding-left: var(--sp-4);
+}
+.articleBody h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--clr-primary);
+  box-shadow: var(--glow-sm);
+}
+
+.articleBody h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--clr-rim);
+  margin: var(--sp-6) 0 var(--sp-3);
+  letter-spacing: -0.01em;
+}
+
+.articleBody a {
+  color: var(--clr-primary);
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 238, 255, 0.3);
+}
+
+.articleBody blockquote {
+  border-left: 2px solid var(--clr-primary);
+  padding: var(--sp-3) var(--sp-5);
+  margin: var(--sp-6) 0;
+  background: var(--clr-ghost);
+  border-radius: 0 var(--r-md) var(--r-md) 0;
+  color: var(--clr-accent);
+  font-style: normal;
+  font-size: 14px;
+}
+
+.articleBody figure {
+  margin: var(--sp-6) 0;
+}
+.articleBody figure img {
+  width: 100%;
+  border-radius: var(--r-md);
+  border: var(--border-glass);
+  display: block;
+}
+.articleBody figcaption {
+  font-size: 10.5px;
+  color: var(--clr-text-dim);
+  text-align: center;
+  margin-top: var(--sp-2);
+  letter-spacing: 0.05em;
+}
+
+/* Cas des images "nues" du markdown (![alt](src) sans figure/figcaption dédiée) */
+.articleBody img {
+  width: 100%;
+  border-radius: var(--r-md);
+  border: var(--border-glass);
+  display: block;
+  margin: var(--sp-6) 0;
+}
+
+.articleBody ul,
+.articleBody ol {
+  margin: 0 0 var(--sp-5) var(--sp-5);
+}
+.articleBody li {
+  margin-bottom: var(--sp-2);
+  color: var(--clr-text-sub);
+}
+.articleBody li::marker {
+  color: var(--clr-primary);
+}
+
+.articleBody pre {
+  background: var(--clr-surface-high);
+  border: var(--border-glass);
+  border-radius: var(--r-md);
+  padding: var(--sp-4) var(--sp-5);
+  overflow-x: auto;
+  margin: var(--sp-6) 0;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+.articleBody code {
+  font-family: var(--font-mono);
+}
+/* Code inline (hors bloc ```), pour le distinguer visuellement */
+.articleBody :not(pre) > code {
+  background: var(--clr-ghost);
+  color: var(--clr-accent);
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  font-size: 0.9em;
+}
+
+.articleBody table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--sp-6) 0;
+  font-size: 13px;
+}
+.articleBody th,
+.articleBody td {
+  border: var(--border-glass);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+.articleBody th {
+  color: var(--clr-rim);
+  font-family: var(--font-display);
+  background: var(--clr-ghost);
+}

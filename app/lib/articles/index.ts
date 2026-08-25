@@ -26,7 +26,14 @@ function toArticleMeta( slug: string, locale: Locale, frontmatter: ArticleFrontm
   const readingTimeMinutes = frontmatter.readingTime ?? estimateReadingTime(rawContent)
   const coverUrl = frontmatter.cover ? `/content/articles/${slug}/${frontmatter.cover}` : undefined
 
-  return { ...frontmatter, slug, locale, coverUrl, readingTimeMinutes }
+  const formattedDate = frontmatter.dateISO
+      ? new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }).format(
+          new Date(frontmatter.dateISO)
+        )
+      : null
+
+
+  return { ...frontmatter, slug, locale, coverUrl, readingTimeMinutes, formattedDate,  }
 }
 
 export function getArticleMeta(slug: string, locale: Locale): ArticleMeta | null {
@@ -57,7 +64,8 @@ export function getAllArticles(locale: Locale, options: GetAllArticlesOptions = 
     .filter((meta): meta is ArticleMeta => meta !== null)
     .filter((meta) => includeUnlisted || meta.listed)
 
-  return metas.sort((a, b) => new Date(b.dateISO).getTime() - new Date(a.dateISO).getTime())
+  const getTime = (meta: ArticleMeta) => (meta.dateISO ? new Date(meta.dateISO).getTime() : 0)
+  return metas.sort((a, b) => getTime(b) - getTime(a))
 }
 
 export function getAllTags(locale: Locale): string[] {

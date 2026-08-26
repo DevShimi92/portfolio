@@ -1,16 +1,11 @@
+import type { ReactElement } from 'react'
 import './ArticleBody.css'
 
 interface ArticleBodyProps {
-  contentHtml: string
+  content: ReactElement
 }
 
-// injecte le HTML déjà transformé par markdownToHtml
-export default function ArticleBody({ contentHtml }: ArticleBodyProps) {
-  return (
-    <div
-      className="articleBody"
-      // eslint-disable-next-line react/no-danger
-      dangerouslySetInnerHTML={{ __html: contentHtml }}
-    />
-  )
+// rend le JSX déjà compilé par compileArticleMdx
+export default function ArticleBody({ content }: ArticleBodyProps) {
+  return <div className="articleBody">{content}</div>
 }

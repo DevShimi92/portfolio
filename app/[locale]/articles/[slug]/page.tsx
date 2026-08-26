@@ -43,7 +43,7 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
   return (
     <article className={styles.page}>
       <ArticleHeader article={article} />
-      <ArticleBody contentHtml={article.contentHtml} />
+      <ArticleBody content={article.content} />
     </article>
   )
 }

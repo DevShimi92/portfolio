@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import type { routing } from '@/app/i18n/routing'
 
 export type Locale = (typeof routing.locales)[number]
@@ -21,5 +22,5 @@ export interface ArticleMeta extends ArticleFrontmatter {
 }
 
 export interface Article extends ArticleMeta {
-  contentHtml: string
+  content: ReactElement
 }

@@ -1,14 +1,14 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
-import { markdownToHtml } from './markdown'
+import { compileArticleMdx } from './mdx'
 import { estimateReadingTime } from './reading-time'
 import type { Article, ArticleFrontmatter, ArticleMeta, Locale } from '@/app/types//articles'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'articles')
 
 function readFrontmatterFile(slug: string, locale: Locale) {
-  const filePath = path.join(CONTENT_DIR, slug, `${locale}.md`)
+  const filePath = path.join(CONTENT_DIR, slug, `${locale}.mdx`)
   if (!fs.existsSync(filePath)) return null
   const raw = fs.readFileSync(filePath, 'utf8')
   return matter(raw)
@@ -47,9 +47,9 @@ export async function getArticle(slug: string, locale: Locale): Promise<Article 
   if (!parsed) return null
 
   const meta = toArticleMeta(slug, locale, parsed.data as ArticleFrontmatter, parsed.content)
-  const contentHtml = await markdownToHtml(parsed.content, slug)
+  const content = await compileArticleMdx(parsed.content, slug)
 
-  return { ...meta, contentHtml }
+  return { ...meta, content }
 }
 
 interface GetAllArticlesOptions {

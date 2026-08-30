@@ -1,6 +1,7 @@
 import { Fragment } from 'react'
 import Image from 'next/image'
-import type { ArticleMeta } from '@/app/types//articles'
+import type { ArticleMeta } from '@/app/types/articles'
+import MiniTag from '../miniTag/MiniTag'
 import styles from './ArticleHeader.module.css'
 
 
@@ -30,15 +31,13 @@ export default function ArticleHeader({ article }: ArticleHeaderProps) {
       </div>
     )
 
-    const tagsRow = (
-      <div className={styles.tags}>
-        {article.tags.map((tag) => (
-          <span key={tag} className="mini-tag">
-            {tag}
-          </span>
-        ))}
-      </div>
-    )
+  const tagsRow = (
+    <div className={styles.tags}>
+      {article.tags.map((tag) => (
+        <MiniTag key={tag}>{tag}</MiniTag>
+      ))}
+    </div>
+  )
 
     if (article.coverUrl) {
       return (

@@ -1,0 +1,28 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: var(--sp-8) var(--sp-5);
+  position: relative;
+  z-index: 10;
+  max-width: 1680px;
+  margin: 0 auto;
+}
+
+.listingHead {
+  text-align: center;
+  margin-bottom: var(--sp-6);
+}
+
+.listingTitle {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  background: linear-gradient(135deg, var(--clr-rim) 0%, var(--clr-primary) 52%, var(--clr-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

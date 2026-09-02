@@ -1,5 +1,5 @@
 'use client'
-
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -14,6 +14,7 @@ interface ArticlesSommaireProps {
 }
 
 export default function ArticlesSommaire({ articles, tags }: ArticlesSommaireProps) {
+  const t = useTranslations('articlePage')
   const [activeTags, setActiveTags] = useState<string[]>([])
   const [activeSlug, setActiveSlug] = useState(articles[0]?.slug)
 
@@ -21,20 +22,13 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
     setActiveTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]))
   }
 
-  const filteredArticles =
-    activeTags.length === 0
-      ? articles
-      : articles.filter((article) => activeTags.every((tag) => article.tags.includes(tag)))
+  const filteredArticles = activeTags.length === 0 ? articles : articles.filter((article) => activeTags.every((tag) => article.tags.includes(tag)))
 
   const activeArticle =
     filteredArticles.find((article) => article.slug === activeSlug) ?? filteredArticles[0]
 
     const hasNoArticleAtAll = articles.length === 0
-    const emptyMessage = hasNoArticleAtAll
-        ? 'Aucun article pour l\u2019instant.'
-        : filteredArticles.length === 0
-          ? 'Aucun article ne correspond à ce filtre.'
-          : null
+    const emptyMessage = hasNoArticleAtAll ? t('noArticle') : filteredArticles.length === 0 ? t('notFound') : null
 
   const tagFilterChips = (
     <>

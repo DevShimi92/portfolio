@@ -48,7 +48,7 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
           {emptyMessage ? ( <p className={styles.emptyState}>{emptyMessage}</p> ) : (
           <div className={styles.splitList}>
             {filteredArticles.map((article) => (
-              <Link key={article.slug} href={`/articles/${article.slug}`} className={`${styles.splitListItem} ${article.slug === activeSlug ? styles.active : ''}`}
+               <Link key={article.slug} href={`/articles/${encodeURIComponent(article.slug)}`} className={`${styles.splitListItem} ${article.slug === activeSlug ? styles.active : ''}`}
                 onMouseEnter={() => setActiveSlug(article.slug)} onFocus={() => setActiveSlug(article.slug)} >
                 <span className={styles.splitListTitle}>{article.title}</span>
                 <span className={styles.splitListMeta}>
@@ -70,7 +70,7 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
 
 
         {activeArticle && (
-          <Link href={`/articles/${activeArticle.slug}`} className={styles.splitFeature}>
+          <Link href={`/articles/${encodeURIComponent(activeArticle.slug)}`} className={styles.splitFeature}>
             {activeArticle.coverUrl && ( <Image src={activeArticle.coverUrl} alt="" fill sizes="(max-width: 1150px) 56vw, 62vw" className={styles.splitFeatureImg} /> )}
             <div className={styles.splitFeatureBody}>
               <h2 className={styles.splitTitle}>{activeArticle.title}</h2>
@@ -95,7 +95,7 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
         {!hasNoArticleAtAll && ( <div className={`${styles.tagFilterGroup} ${styles.tagFilterGroupMobile}`}>{tagFilterChips}</div> )}
         {emptyMessage ? (<p className={styles.emptyState}>{emptyMessage}</p>) : (<div>
           {filteredArticles.map((article) => (
-            <Link key={article.slug} href={`/articles/${article.slug}`} className={styles.card}>
+            <Link key={article.slug} href={`/articles/${encodeURIComponent(article.slug)}`} className={styles.card}>
               {article.coverUrl && (
                 <div className={styles.cardCover}>
                   <Image src={article.coverUrl} alt="" fill sizes="(max-width: 600px) 100vw, 50vw" />

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { getAllArticles, getAllTags } from '@/app/lib/articles'
 import type { Locale } from '@/app/types/articles'
-import ArticlesInteractive from '../_components/articleSommaire/ArticlesSommaire'
+import ArticlesSommaire from '../_components/articleSommaire/ArticlesSommaire'
 import styles from './articles.module.css'
 
 interface ArticlesSommaireProps {
@@ -30,7 +30,7 @@ export default async function ArticlesSommairePage({ params }: ArticlesSommaireP
         <h1 className={styles.listingTitle}>Articles</h1>
       </div>
 
-      <ArticlesInteractive articles={articles} tags={tags} />
+      <ArticlesSommaire articles={articles} tags={tags} />
     </div>
   )
 }

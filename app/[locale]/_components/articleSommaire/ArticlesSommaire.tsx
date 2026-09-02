@@ -13,6 +13,12 @@ interface ArticlesSommaireProps {
   tags: string[]
 }
 
+const SAFE_SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function hasSafeSlug(article: ArticleMeta): boolean {
+  return SAFE_SLUG_RE.test(article.slug)
+}
+
 export default function ArticlesSommaire({ articles, tags }: ArticlesSommaireProps) {
   const t = useTranslations('articlePage')
   const [activeTags, setActiveTags] = useState<string[]>([])
@@ -23,12 +29,13 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
   }
 
   const filteredArticles = activeTags.length === 0 ? articles : articles.filter((article) => activeTags.every((tag) => article.tags.includes(tag)))
+  const safeFilteredArticles = filteredArticles.filter(hasSafeSlug)
 
   const activeArticle =
-    filteredArticles.find((article) => article.slug === activeSlug) ?? filteredArticles[0]
+    safeFilteredArticles.find((article) => article.slug === activeSlug) ?? safeFilteredArticles[0]
 
     const hasNoArticleAtAll = articles.length === 0
-    const emptyMessage = hasNoArticleAtAll ? t('noArticle') : filteredArticles.length === 0 ? t('notFound') : null
+    const emptyMessage = hasNoArticleAtAll ? t('noArticle') : safeFilteredArticles.length === 0 ? t('notFound') : null
 
   const tagFilterChips = (
     <>
@@ -47,7 +54,7 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
           {!hasNoArticleAtAll && (<div className={`${styles.tagFilterGroup} ${styles.tagFilterGroupDesktop}`}>{tagFilterChips}</div>)}
           {emptyMessage ? ( <p className={styles.emptyState}>{emptyMessage}</p> ) : (
           <div className={styles.splitList}>
-            {filteredArticles.map((article) => (
+            {safeFilteredArticles.map((article) => (
                <Link key={article.slug} href={`/articles/${encodeURIComponent(article.slug)}`} className={`${styles.splitListItem} ${article.slug === activeSlug ? styles.active : ''}`}
                 onMouseEnter={() => setActiveSlug(article.slug)} onFocus={() => setActiveSlug(article.slug)} >
                 <span className={styles.splitListTitle}>{article.title}</span>
@@ -94,7 +101,7 @@ export default function ArticlesSommaire({ articles, tags }: ArticlesSommairePro
       <div className={styles.mobileGrid}>
         {!hasNoArticleAtAll && ( <div className={`${styles.tagFilterGroup} ${styles.tagFilterGroupMobile}`}>{tagFilterChips}</div> )}
         {emptyMessage ? (<p className={styles.emptyState}>{emptyMessage}</p>) : (<div>
-          {filteredArticles.map((article) => (
+          {safeFilteredArticles.map((article) => (
             <Link key={article.slug} href={`/articles/${encodeURIComponent(article.slug)}`} className={styles.card}>
               {article.coverUrl && (
                 <div className={styles.cardCover}>

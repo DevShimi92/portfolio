@@ -1,0 +1,9 @@
+.miniTag {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  background: var(--clr-ghost);
+  padding: 3px var(--sp-2);
+  border-radius: var(--r-sm);
+}

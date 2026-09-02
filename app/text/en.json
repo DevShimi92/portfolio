@@ -65,6 +65,10 @@
       "default": "An error occurred."
     }
   },
+  "articlePage":{
+    "noArticle":"No articles yet.",
+    "notFound":"No article match this filter."
+  },
   "footer": {
     "text": "Crafted by yours truly"
   },

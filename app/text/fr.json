@@ -66,6 +66,10 @@
       "default": "Une erreur est survenue."
     }
   },
+  "articlePage":{
+    "noArticle":"Aucun article pour l'instant.",
+    "notFound":"Aucun article ne correspond à ce filtre."
+  },
   "footer": {
     "text": "Construit par votre serviteur"
   },

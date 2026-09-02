@@ -1,0 +1,26 @@
+.tagChip {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: 999px;
+  border: var(--border-glass);
+  background: var(--clr-surface);
+  color: var(--clr-text-sub);
+  cursor: pointer;
+  transition: all var(--t-fast) var(--ease-out);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+}
+.tagChip:hover {
+  color: var(--clr-accent);
+  border-color: rgba(0, 238, 255, 0.4);
+}
+.tagChip.tagChipOn {
+  color: var(--clr-bg);
+  background: var(--clr-primary);
+  border-color: var(--clr-primary);
+  box-shadow: var(--glow-sm);
+  font-weight: 500;
+}

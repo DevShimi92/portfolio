@@ -6,6 +6,12 @@ import { estimateReadingTime } from './reading-time'
 import type { Article, ArticleFrontmatter, ArticleMeta, Locale } from '@/app/types//articles'
 
 const CONTENT_DIR = path.join(process.cwd(), 'content', 'articles')
+const SAFE_SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+function isSafeSlug(value: string): boolean {
+   return SAFE_SLUG_RE.test(value)
+ }
+
 
 function readFrontmatterFile(slug: string, locale: Locale) {
   const filePath = path.join(CONTENT_DIR, slug, `${locale}.mdx`)
@@ -20,6 +26,7 @@ export function getArticleSlugs(): string[] {
     .readdirSync(CONTENT_DIR, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name)
+    .filter((slug) => isSafeSlug(slug))
 }
 
 function toArticleMeta( slug: string, locale: Locale, frontmatter: ArticleFrontmatter, rawContent: string ): ArticleMeta {

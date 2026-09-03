@@ -82,5 +82,14 @@
     "title":"Erreur serveur",
     "text":"Erreur inattendue côté serveur.",
     "button":"Retour à l'accueil"
+  },
+  "seoMetadata":{
+    "home":"Accueil",
+    "description": "Mon Portfolio de dev",
+    "openGraph":{
+      "title":"| Développeur full-stack",
+      "description":"Découvrez mon portfolio de dev ainsi que mes derniers projets.",
+      "siteName": "Portfolio de "
+    }
   }
 }

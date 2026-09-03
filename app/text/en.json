@@ -81,5 +81,14 @@
     "title":"Server error",
     "text":"Unexpected server-side error.",
     "button":"Back to home"
+  },
+  "seoMetadata":{
+    "home":"Home",
+    "description": "My Portfolio of dev",
+    "openGraph":{
+      "title":"| Full Stack Developer",
+      "description":"Check out my developer portfolio and my latest projects.",
+      "siteName": "Portfolio of "
+    }
   }
 }

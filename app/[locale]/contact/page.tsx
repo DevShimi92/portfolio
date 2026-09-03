@@ -1,8 +1,13 @@
+import type { Metadata } from 'next'
 import { useTranslations } from 'next-intl'
 import ContactForm from '../_components/contactForm/contactForm'
 import PageTransition from '../_components/pageTransition/pageTransition'
 import Footer from '@/app/[locale]/_components/footer/footer';
 import styles from './contact.module.css'
+
+export const metadata: Metadata = {
+  title: 'Contact'
+}
 
 export default function Contact() {
   const t = useTranslations('contactPage')

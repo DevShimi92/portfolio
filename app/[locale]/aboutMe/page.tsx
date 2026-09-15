@@ -30,16 +30,19 @@ export default function AboutMe() {
   return (
     <div className={styles.section}>
         <div className={styles.container}>
-          <PhotoFrame imgUrl="/api/profile-img" cvUrl={process.env.PROFILE_CV_LINK ?? '#'}/>
           <div className={styles.textBlock}>
             <h2 className={styles.title}>{title}</h2>
-          <div className={styles.bio}>
-            {bioLines.map((line, i) => (
-                          <p key={i} className={styles.bioLine}>
-                            {parseLineWithHighlights(line, highlights)}
-                          </p>
-                        ))}
+              <div className={styles.bio}>
+                {bioLines.map((line, i) => (
+                  <p key={i} className={styles.bioLine}> {parseLineWithHighlights(line, highlights)} </p>
+                ))}
+              </div>
             </div>
+          <PhotoFrame imgUrl="/api/profile-img" cvUrl={process.env.PROFILE_CV_LINK ?? '#'} className={styles.photoWrap} />
+          <div className={styles.ctaWrap}>
+            <Link href={`/contact`} className={styles.ctaBtn}>
+              {t('buttonAboutMeContact')}
+            </Link>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ name: SonarCloud
 
 on:
   push:
-    branches: [ "small_Improve " ]
+    branches: [ "small_Improve" ]
   pull_request:
     branches: [ "main" ]
 

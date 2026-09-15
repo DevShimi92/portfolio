@@ -9,9 +9,10 @@ const FALLBACK_IMG = '/images/profile-placeholder.jpg'
 type Props = {
   imgUrl: string
   cvUrl: string
+  className?: string
 }
 
-export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
+export default function PhotoFrame({ imgUrl, cvUrl, className }: Props) {
 
   const t = useTranslations('aboutMePage')
   const downloadTextButton = t.raw('downloadButton') as string
@@ -37,7 +38,7 @@ export default function PhotoFrame({ imgUrl, cvUrl }: Props) {
   }, [])
 
   return (
-    <div ref={wrapperRef} className={styles.photoWrapper} onContextMenu={(e) => e.preventDefault()}>
+    <div ref={wrapperRef} className={`${styles.photoWrapper} ${className || ''}`} onContextMenu={(e) => e.preventDefault()}>
       <Image src={imgUrl ?? FALLBACK_IMG}
         alt="Picture profile"
         fill

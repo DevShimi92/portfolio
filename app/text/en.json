@@ -12,7 +12,8 @@
       "I enjoy working at the intersection of code and software architecture, by making and delivering my clients business needs with some classic/Ai tools and software.",
       "In my spare time, i devote myself to various subjects related to Dev/DevOps on my personal homelab or jointly with some friends. Otherwise, I also like playing video games (especially FGs) or watching anime."
     ],
-    "highlights": []
+    "highlights": [],
+    "buttonAboutMeContact":"Contact me"
   },
   "projetsPage":{
     "title":"Something i do",

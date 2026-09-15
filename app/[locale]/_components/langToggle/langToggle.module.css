@@ -2,7 +2,7 @@
   position: fixed;
   z-index: 100;
   top: var(--sp-5);
-  right: calc(var(--sp-5) + 48px + var(--sp-2));
+  right: var(--sp-5);
 
   display: flex;
   align-items: center;

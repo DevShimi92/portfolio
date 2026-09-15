@@ -7,7 +7,6 @@ import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext
 import ThreeSceneLoader from "@/app/[locale]/_components/backgroundThreeJS/threeLoader"
 import ScrollHint from './_components/ScrollHint/ScrollHint';
 import NavBar from './_components/navBar/navbar';
-import ThemeProvider from '@/app/[locale]/_components/themeProvider/ThemeProvider'
 import './globals.css';
 
 type Props = {
@@ -79,7 +78,6 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
   return (
     <html className={`${syne.variable} ${mono.variable}`} suppressHydrationWarning>
       <body>
-        <ThemeProvider>
         <BackgroundProvider>
           <ThreeSceneLoader />
           <NavBar />
@@ -89,7 +87,6 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
                 <Analytics />
               </NextIntlClientProvider>
           </BackgroundProvider>
-        </ThemeProvider>
         </body>
     </html>
   )

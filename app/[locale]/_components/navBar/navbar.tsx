@@ -6,7 +6,6 @@ import navStyles from './navbar.module.css'
 import hamStyles from './hamburger.module.css'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
 import SocialLinks, { SocialLinksInline } from '@/app/[locale]/_components/socialButton/socialButton'
-import ThemeToggle, { ThemeToggleInline } from '../themeToggle/themeToggle'
 import LangToggle, { LangToggleInline } from '../langToggle/langToggle'
 import { NAV_LINKS } from '@/app/lib/navigation'
 import type { NavLink } from '@/app/types/navlink';
@@ -86,7 +85,6 @@ export default function NavBar() {
         )}
       </nav>
       <SocialLinks />
-      {/*<ThemeToggle />*/}
       <LangToggle />
 
       {/* ── Mobile : bouton hamburger ── */}
@@ -116,7 +114,6 @@ export default function NavBar() {
             <SocialLinksInline />
           </div>
           <div className={hamStyles.overlayBottomRight}>
-            {/* <ThemeToggleInline />*/}
             <LangToggleInline />
           </div>
         </div>

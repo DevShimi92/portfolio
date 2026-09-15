@@ -62,7 +62,7 @@
 }
 
 .submit {
-  align-self: flex-start;
+  align-self: center;
   padding: var(--sp-3) var(--sp-6);
   border-radius: var(--r-md);
   border: var(--border-glass-bright);

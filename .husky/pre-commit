@@ -1,1 +1,4 @@
+npm audit
+npx tsc --noEmit
 npx lint-staged
+npx vitest run --coverage

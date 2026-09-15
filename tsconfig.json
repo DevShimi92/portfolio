@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "esnext",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -13,6 +13,9 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
+    "types": ["node"],
+    "forceConsistentCasingInFileNames": true,
+    //"noUncheckedIndexedAccess": true, Fix les errors flagé avec avant
     "plugins": [
       {
         "name": "next"
@@ -22,6 +25,7 @@
       "@/*": ["./*"]
     }
   },
+  "rootDir": ".",
   "include": [
     "next-env.d.ts",
     "**/*.ts",

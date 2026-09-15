@@ -1,6 +1,6 @@
 'use client'
 import { useTranslations } from 'next-intl'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import type { Project } from '@/app/types/projets'
 import styles from './projects.module.css'

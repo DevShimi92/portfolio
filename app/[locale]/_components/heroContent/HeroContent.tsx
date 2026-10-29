@@ -15,9 +15,9 @@ export default function HeroContent({ role, name, disciplines, locale }: Props) 
   const [discIndex, setDiscIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const current = locale === 'fr'
-    ? disciplines[discIndex]
-    : `${disciplines[discIndex]}\n${role}`;
+// False positive : the input does not come from the user.
+// eslint-disable-next-line security/detect-object-injection
+const current: string = locale === 'fr' ? disciplines[discIndex] : `${disciplines[discIndex]}\n${role}`;
 
   useEffect(() => {
     const speed = isDeleting ? 45 : 80;

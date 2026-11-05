@@ -21,6 +21,7 @@
     "@marsidev/react-turnstile": "^1.6.3",
     "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.4.0",
+    "@vercel/speed-insights": "^2.1.0",
     "detect-gpu": "^5.0.70",
     "framer-motion": "^12.40.0",
     "gray-matter": "^4.0.3",

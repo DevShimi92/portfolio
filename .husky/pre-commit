@@ -1,4 +1,4 @@
-npm audit
+npm audit --audit-level=high
 npx tsc --noEmit
 npx lint-staged
 npx vitest run --coverage

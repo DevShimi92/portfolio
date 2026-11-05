@@ -57,13 +57,16 @@
     "messagePlaceholder": "Have a request? A project? Or want to discuss a topic? All starts with this message.",
     "submitLabel": "Send",
     "submitPending": "Sending...",
+    "captchaPending":"Checking...",
     "successMessage": "Send! I'll get back to you as soon as possible.",
     "errors": {
       "invalidEmail": "Invalid email address.",
       "messageTooShort": "The message is too short.",
       "messageTooLong": "The message is too long (2000 characters max).",
       "sendFailed": "Sending failed. Please try again later.",
-      "default": "An error occurred."
+      "default": "An error occurred.",
+      "captchaFailed":"Captcha Failed",
+      "captchaExpired":"Captcha Expired"
     }
   },
   "articlePage":{

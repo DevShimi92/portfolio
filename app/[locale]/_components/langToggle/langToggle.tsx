@@ -15,7 +15,7 @@ export default function LangToggle() {
 
   function toggle() {
     const nextLocale = locale === 'fr' ? 'en' : 'fr'
-    const newPathname = pathname.replace(`/${locale}`, `/${nextLocale}`) || `/${nextLocale}`
+    const newPathname = pathname.replace(`/${locale}`, `/${nextLocale}`)
     router.push(newPathname)
   }
 
@@ -38,7 +38,7 @@ export function LangToggleInline() {
 
   function toggle() {
     const nextLocale = locale === 'fr' ? 'en' : 'fr'
-    const newPathname = pathname.replace(`/${locale}`, `/${nextLocale}`) || `/${nextLocale}`
+    const newPathname = pathname.replace(`/${locale}`, `/${nextLocale}`)
     router.push(newPathname)
   }
 

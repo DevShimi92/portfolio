@@ -1,5 +1,6 @@
 'use client'
-import { useActionState, useState } from 'react'
+import { useActionState, useState, useRef } from 'react'
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { sendContactMessage, type ContactFormState } from './actions'
 import styles from './contactForm.module.css'
 
@@ -9,6 +10,7 @@ type Labels = {
   messageLabel: string
   messagePlaceholder: string
   submitLabel: string
+  captchaPending: string
   submitPending: string
   successMessage: string
   errorMessages: Record<string, string>
@@ -16,12 +18,16 @@ type Labels = {
 
 const initialState: ContactFormState = { status: 'idle' }
 
+const TurnstileSiteKey = String(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY)
+
 export default function ContactForm({ labels }: { labels: Labels }) {
   const [state, formAction, isPending] = useActionState(contactAction, initialState)
   const [startedAt] = useState(() => Date.now())
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   const isError = state.status === 'error'
+  const turnstileRef = useRef<TurnstileInstance>(null)
+  const [captchaReady, setCaptchaReady] = useState(false)
 
   async function contactAction(prevState: ContactFormState, formData: FormData) {
     const result = await sendContactMessage(prevState, formData)
@@ -29,6 +35,8 @@ export default function ContactForm({ labels }: { labels: Labels }) {
       setEmail('')
       setMessage('')
     }
+    turnstileRef.current?.reset()
+    setCaptchaReady(false)
     return result
   }
 
@@ -37,7 +45,7 @@ export default function ContactForm({ labels }: { labels: Labels }) {
       {/* Honeypot */}
       <input
         type="text"
-        name="website"
+        name="company_url"
         tabIndex={-1}
         autoComplete="off"
         aria-hidden="true"
@@ -75,8 +83,15 @@ export default function ContactForm({ labels }: { labels: Labels }) {
         />
       </div>
 
-      <button type="submit" className={styles.submit} disabled={isPending}>
-        {isPending ? labels.submitPending : labels.submitLabel}
+      <Turnstile
+        ref={turnstileRef} siteKey={TurnstileSiteKey} options={{ theme: 'auto', size: 'flexible', appearance: 'interaction-only', refreshExpired: 'auto' }}
+        onSuccess={() => setCaptchaReady(true)} onExpire={() => setCaptchaReady(false)} onError={() => setCaptchaReady(false)}
+      />
+
+      <button type="submit" className={styles.submit} disabled={isPending || !captchaReady}>
+        {isPending ? labels.submitPending
+          : !captchaReady ? labels.captchaPending
+          : labels.submitLabel}
       </button>
 
       {state.status === 'success' && (

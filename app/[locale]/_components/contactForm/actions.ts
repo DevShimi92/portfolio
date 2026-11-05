@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 const targetMail = String(process.env.CONTACT_TARGET_EMAIL)
+const turnstileSecret = String(process.env.TURNSTILE_SECRET)
 
 export type ContactFormState = {
   status: 'idle' | 'success' | 'error'
@@ -18,7 +19,7 @@ export async function sendContactMessage(
   formData: FormData
 ): Promise<ContactFormState> {
   // ── Honeypot : champ rempli → bot, faux succès ──
-  if (formData.get('website')) {
+  if (formData.get('company_url')) {
     return { status: 'success' }
   }
 
@@ -41,6 +42,25 @@ export async function sendContactMessage(
   if (message.length > 2000) {
     return { status: 'error', message: 'messageTooLong' }
   }
+
+  // ── Cloudflare Turnstile ──
+  const token = String(formData.get('cf-turnstile-response') ?? '')
+  if (!token) return { status: 'error', message: 'captchaFailed' }
+  try {
+    const res = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body: new URLSearchParams({ secret: turnstileSecret, response: token }),
+    })
+    const data = await res.json()
+    if (!data.success) {
+      const expired = data['error-codes']?.includes('timeout-or-duplicate')
+      return { status: 'error', message: expired ? 'captchaExpired' : 'captchaFailed' }
+      }
+  } catch (err) {
+      console.error('Turnstile error:', err)
+      return { status: 'error', message: 'captchaFailed' }
+  }
+
 
   // ── Envoi via Resend ──
   try {

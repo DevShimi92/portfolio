@@ -19,6 +19,7 @@ export default function Contact() {
     messagePlaceholder: t('messagePlaceholder'),
     submitLabel: t('submitLabel'),
     submitPending: t('submitPending'),
+    captchaPending: t('captchaPending'),
     successMessage: t('successMessage'),
     errorMessages: {
       invalidEmail: t('errors.invalidEmail'),
@@ -26,6 +27,8 @@ export default function Contact() {
       messageTooLong: t('errors.messageTooLong'),
       sendFailed: t('errors.sendFailed'),
       default: t('errors.default'),
+      captchaFailed: t('errors.captchaFailed'),
+      captchaExpired: t('errors.captchaExpired')
     },
   }
 

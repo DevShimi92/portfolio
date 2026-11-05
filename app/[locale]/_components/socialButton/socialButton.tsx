@@ -14,6 +14,8 @@ export default function SocialLinks() {
   return (
     <div className={styles.socialLinks}>
       {socials.map(({ label, href, icon }) => {
+        // False positive : the input does not come from the user.
+        // eslint-disable-next-line security/detect-object-injection
         const Icon = ICONS[icon]
         return (
           <a key={href} href={href} target="_blank" rel="noopener noreferrer"
@@ -31,6 +33,7 @@ export function SocialLinksInline() {
   return (
     <div className={styles.socialLinksInline}>
       {socials.map(({ label, href, icon }) => {
+        // eslint-disable-next-line security/detect-object-injection
         const Icon = ICONS[icon]
         return (
           <a key={href} href={href} target="_blank" rel="noopener noreferrer"

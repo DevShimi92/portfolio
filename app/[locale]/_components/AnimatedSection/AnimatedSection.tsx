@@ -25,6 +25,7 @@ export default function AnimatedSection({ children, id, isHome }: Props) {
       cancelAnimationFrame(rafId)
       rafId = requestAnimationFrame(() => {
         const section = ref.current
+        /* v8 ignore next */
         if (!section) return
         const scrollProgress = Math.min(Math.max(window.scrollY / section.offsetHeight, 0), 1)
         setBlurAmount(scrollProgress)
@@ -42,6 +43,7 @@ export default function AnimatedSection({ children, id, isHome }: Props) {
   // ── IntersectionObserver → currentSection ──
     useEffect(() => {
       const section = ref.current
+      /* v8 ignore next */
       if (!section) return
 
       const observer = new IntersectionObserver(

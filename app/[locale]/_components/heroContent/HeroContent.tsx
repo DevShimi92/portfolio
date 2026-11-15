@@ -17,28 +17,34 @@ export default function HeroContent({ role, name, disciplines, locale }: Props) 
 
 // False positive : the input does not come from the user.
 // eslint-disable-next-line security/detect-object-injection
-const current: string = locale === 'fr' ? disciplines[discIndex] : `${disciplines[discIndex]}\n${role}`;
+const base = disciplines[discIndex] ?? '';
+const current = locale === 'fr' ? base : `${base}\n${role}`;
 
-  useEffect(() => {
-    const speed = isDeleting ? 45 : 80;
+useEffect(() => {
+  if (!disciplines.length) return;
 
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        setDisplayed(current.slice(0, displayed.length + 1));
-        if (displayed.length + 1 === current.length) {
-          setTimeout(() => setIsDeleting(true), 1600);
-        }
-      } else {
-        setDisplayed(current.slice(0, displayed.length - 1));
-        if (displayed.length - 1 === 0) {
-          setIsDeleting(false);
-          setDiscIndex(i => (i + 1) % disciplines.length);
-        }
+  const fullyTyped = !isDeleting && displayed === current;
+  const delay = fullyTyped ? 1600 : isDeleting ? 45 : 80;
+
+  const timeout = setTimeout(() => {
+    if (fullyTyped) {
+      setIsDeleting(true);
+      return;
+    }
+    if (!isDeleting) {
+      setDisplayed(current.slice(0, displayed.length + 1));
+    } else {
+      const next = current.slice(0, displayed.length - 1);
+      setDisplayed(next);
+      if (next.length === 0) {
+        setIsDeleting(false);
+        setDiscIndex(i => (i + 1) % disciplines.length);
       }
-    }, speed);
+    }
+  }, delay);
 
-    return () => clearTimeout(timeout);
-  }, [displayed, isDeleting, discIndex, current, disciplines.length]);
+  return () => clearTimeout(timeout);
+}, [displayed, isDeleting, current, disciplines.length]);
 
   return (
     <div className={styles.hero}>

@@ -11,14 +11,14 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
-      //include: ['app/[locale]/_components/**/*.{ts,tsx}'],
-      exclude: ['node_modules/', '.next/', '**/*.config.*'],
-      //thresholds: {
-      //    lines: 75,
-      //    functions: 75,
-      //    branches: 75,
-      //    statements: 75,
-      //  },
+      include: ['app/[locale]/**/**/*.{ts,tsx}'],
+      exclude: ['node_modules/', '.next/', '**/*.config.*','app/[locale]/_articles/*.{ts,tsx}','app/[locale]/[slug]/*.{ts,tsx}'],
+      thresholds: {
+          lines: 50,
+          functions: 50,
+          branches: 50,
+          statements: 50,
+        },
     }
   },
   resolve: {

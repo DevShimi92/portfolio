@@ -90,7 +90,7 @@
     "home":"Home",
     "description": "My Portfolio of dev",
     "openGraph":{
-      "title":"| Full Stack Developer",
+      "title":" | Full Stack Developer",
       "description":"Check out my developer portfolio and my latest projects.",
       "siteName": "Portfolio of "
     }

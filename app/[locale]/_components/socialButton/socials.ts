@@ -1,3 +1,4 @@
+/* v8 ignore next */
 export const socials = [
   {
     label: 'GitHub',

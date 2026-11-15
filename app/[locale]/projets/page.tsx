@@ -19,8 +19,6 @@ function VideoOrPlaceholder({ video, title }: { video: Project['video'] | null; 
       </div>
     )
   }
-
-  if (video) {
     return (
       <div className={styles.videoWrapper}>
         {isLoading && (
@@ -41,14 +39,6 @@ function VideoOrPlaceholder({ video, title }: { video: Project['video'] | null; 
         />
       </div>
     )
-  }
-
-  // Placeholder — affiché si video est null ou absent
-  return (
-    <div className={styles.gifPlaceholder}>
-      <span className={styles.gifPlaceholderLabel}>{title.toLowerCase()}.webm</span>
-    </div>
-  )
 }
 
 export default function Projets() {

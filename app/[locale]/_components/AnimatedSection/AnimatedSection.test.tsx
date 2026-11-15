@@ -34,6 +34,7 @@ vi.mock('@/app/[locale]/_components/BackgroundContext/BackgroundContext', () => 
 }))
 
 vi.mock('@/app/lib/scrollMemory', () => ({
+  setLastScrollY: (y: number) => setLastScrollY(y),
 }))
 
 // ── IntersectionObserver stub ──

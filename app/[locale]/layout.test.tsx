@@ -45,6 +45,11 @@ vi.mock('./_components/ScrollHint/ScrollHint', () => ({
 vi.mock('./_components/navBar/navbar', () => ({
   default: () => <i data-testid="nav" />,
 }))
+
+vi.mock('@/app/[locale]/_components/easterEgg/EasterEggHost', () => ({
+  default: () => null,
+}))
+
 vi.mock('./globals.css', () => ({}))
 
 const params = (locale: string) => Promise.resolve({ locale })

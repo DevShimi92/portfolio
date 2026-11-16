@@ -5,6 +5,7 @@ import { useBackground } from '@/app/[locale]/_components/BackgroundContext/Back
 import { isScrollEnabled } from '@/app/lib/threejs/renderer/cameraProfile'
 import { detectPerfTier, type PerfLevel } from '@/app/lib/threejs/perf/detectPerfTier'
 import { useActiveNavLink } from '@/app/[locale]/_hooks/useActiveNavLink'
+import { registerBackground, unregisterBackground } from '@/app/lib/easterEgg/bridge'
 
 const MAX_BLUR = 7 // px
 
@@ -44,7 +45,8 @@ export default function ThreeJsBackground() {
     // Construction réelle de la scène (différée ci-dessous)
     const build = () => {
       if (!mountRef.current) return;
-      const { cleanup, setCameraScroll } = initThreeSceneBackground(mountRef.current, perfLevel);
+      const { cleanup, setCameraScroll, playTriggeredScript, releaseTriggered } = initThreeSceneBackground(mountRef.current, perfLevel);
+      registerBackground({ play: playTriggeredScript, release: releaseTriggered })
       scene = { cleanup };
       setCameraScrollRef.current = setCameraScroll
 
@@ -89,6 +91,7 @@ export default function ThreeJsBackground() {
     return () => {
       if (window.cancelIdleCallback) window.cancelIdleCallback(idleId)
       else window.clearTimeout(idleId)
+      unregisterBackground()
       scene?.cleanup()
     };
   }, [perfLevel]);

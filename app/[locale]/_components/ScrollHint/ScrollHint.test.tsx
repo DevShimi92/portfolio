@@ -3,6 +3,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import ScrollHint from './ScrollHint'
 import { useActiveNavLink } from '@/app/[locale]/_hooks/useActiveNavLink'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
+import { makeBackgroundContextMock } from '@/app/test/mockBackgroundContext'
 
 vi.mock('@/app/[locale]/_hooks/useActiveNavLink', () => ({
   useActiveNavLink: vi.fn(),
@@ -18,12 +19,7 @@ function setupMocks({ isStandaloneRoute = false, blurAmount = 0 } = {}) {
     activeRouteId: null,
     locale: 'fr',
   })
-  vi.mocked(useBackground).mockReturnValue({
-    blurAmount,
-    setBlurAmount: vi.fn(),
-    currentSection: 'home',
-    setCurrentSection: vi.fn(),
-  })
+  vi.mocked(useBackground).mockReturnValue(makeBackgroundContextMock({ blurAmount }))
 }
 
 describe('ScrollHint', () => {

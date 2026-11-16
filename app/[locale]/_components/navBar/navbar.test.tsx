@@ -4,6 +4,7 @@ import { describe, test, expect, vi, beforeEach } from 'vitest'
 import NavBar from './navbar'
 import { useActiveNavLink } from '@/app/[locale]/_hooks/useActiveNavLink'
 import { useBackground } from '@/app/[locale]/_components/BackgroundContext/BackgroundContext'
+import { makeBackgroundContextMock } from '@/app/test/mockBackgroundContext'
 
 vi.mock('@/app/[locale]/_hooks/useActiveNavLink', () => ({
   useActiveNavLink: vi.fn(),
@@ -47,12 +48,7 @@ function setupMocks({
     activeRouteId,
     locale: 'fr',
   })
-  vi.mocked(useBackground).mockReturnValue({
-    blurAmount: 0,
-    setBlurAmount: vi.fn(),
-    currentSection,
-    setCurrentSection: vi.fn(),
-  })
+  vi.mocked(useBackground).mockReturnValue(makeBackgroundContextMock({ currentSection }))
 }
 
 describe('NavBar', () => {

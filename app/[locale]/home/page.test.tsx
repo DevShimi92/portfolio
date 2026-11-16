@@ -33,6 +33,10 @@ vi.mock('./home.module.css', () => ({
   default: { homeSection: 'homeSection' },
 }))
 
+vi.mock('@/app/[locale]/_components/easterEgg/EasterEggDetector', () => ({
+  default: () => null,
+}))
+
 describe('Home', () => {
   beforeEach(() => {
     heroSpy.mockClear()

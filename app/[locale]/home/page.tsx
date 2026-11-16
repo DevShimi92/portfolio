@@ -1,5 +1,6 @@
 import { useTranslations, useLocale } from 'next-intl';
 import HeroContent from '@/app/[locale]/_components/heroContent/HeroContent';
+import EasterEggDetector from '@/app/[locale]/_components/easterEgg/EasterEggDetector'
 import styles from './home.module.css';
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
         disciplines={disciplines}
         locale={locale}
       />
+      <EasterEggDetector />
     </div>
   );
 }

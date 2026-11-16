@@ -8,6 +8,7 @@ import { BackgroundProvider } from '@/app/[locale]/_components/BackgroundContext
 import ThreeSceneLoader from "@/app/[locale]/_components/backgroundThreeJS/threeLoader"
 import ScrollHint from './_components/ScrollHint/ScrollHint';
 import NavBar from './_components/navBar/navbar';
+import EasterEggHost from '@/app/[locale]/_components/easterEgg/EasterEggHost'
 import './globals.css';
 
 type Props = {
@@ -81,14 +82,15 @@ export default async function RootLayout({ children, params }: LayoutProps<'/[lo
       <body>
         <BackgroundProvider>
           <ThreeSceneLoader />
-          <NavBar />
-            <ScrollHint />
-              <NextIntlClientProvider locale={locale}>
-                {children}
-            <Analytics />
-            <SpeedInsights />
-              </NextIntlClientProvider>
-          </BackgroundProvider>
+          <EasterEggHost />
+            <NavBar />
+              <ScrollHint />
+                <NextIntlClientProvider locale={locale}>
+                  {children}
+              <Analytics />
+              <SpeedInsights />
+                </NextIntlClientProvider>
+            </BackgroundProvider>
         </body>
     </html>
   )

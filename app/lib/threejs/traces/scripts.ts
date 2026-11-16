@@ -11,18 +11,15 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
   'default0': {
     scriptId: 'default0',
     activeTraceIds: ['trace-A7'],
-    glowColor: 0x5203FC,
 
   },
   'default1': {
     scriptId: 'default1',
     activeTraceIds: ['trace-A6'],
-    glowColor: 0x5203FC,
   },
   'default2': {
     scriptId: 'default2',
     activeTraceIds: ['trace-A8'],
-    glowColor: 0x5203FC,
   },
   'trace-on-1': {
     scriptId: 'trace-on-1',
@@ -30,6 +27,8 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
     glowColor: 0x03FC28,
     animationConfig: {
       travelSpeed: 90,
+      holdForever: true,
+
     },
   },
   'trace-on-2A': {
@@ -42,6 +41,7 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
       },
     animationConfig: {
       travelSpeed: 90,
+      holdForever: true,
     },
   },
   'trace-on-2B': {
@@ -59,6 +59,7 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
       arcReach:     4,
       arcNervosity: 20,
       arcIntensity: 5,
+      holdForever: true,
     },
   },
   'trace-on-3A': {
@@ -78,6 +79,7 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
       arcReach:     6,
       arcNervosity: 20,
       arcIntensity: 9,
+      holdForever: true,
     },
   },
   'trace-on-3B': {
@@ -91,6 +93,7 @@ export const TRACE_SCRIPTS: Record<string, TraceScript> = {
     },
     animationConfig: {
       travelSpeed: 90,
+      holdForever: true,
     },
   },
 };

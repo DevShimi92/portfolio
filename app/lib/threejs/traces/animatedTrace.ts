@@ -82,8 +82,12 @@ export function updateAnimatedTrace(
 
   // ── hold — trace allumée à 100% ──────────────────────────────
   if (animationState.animationPhase === 'hold') {
-    animationState.phaseElapsedTime += deltaTime;
     pushUniforms(allMaterials, totalLength, 1);
+
+     // Hold infini : la trace reste allumée, pas de fade
+     if (animationConfig.holdForever) return 1;
+
+     animationState.phaseElapsedTime += deltaTime;
 
     if (animationState.phaseElapsedTime >= animationConfig.litHoldDuration) {
       animationState.animationPhase   = 'fade';

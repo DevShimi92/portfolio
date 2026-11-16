@@ -24,4 +24,5 @@ export interface TraceAnimationConfig {
   arcReach:        number;
   arcNervosity:    number;
   arcIntensity:    number;
+  holdForever?:    boolean;
 }
